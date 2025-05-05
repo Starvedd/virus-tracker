@@ -99,12 +99,15 @@
       this.x = x;
       this.y = y;
       this.radius = radius;
-      this.growthRate = 0.3;
+      this.growthRate = 0.2; // Slower growth rate for dots
+      this.maxRadius = 40;   // Set a maximum radius to prevent excessive growth
     }
 
     // Update the dot's radius
     InfectionDot.prototype.update = function () {
-      this.radius += this.growthRate;
+      if (this.radius < this.maxRadius) {
+        this.radius += this.growthRate;
+      }
     };
 
     const infectionDots = [];
@@ -142,8 +145,8 @@
         // Ensure the dot stays within Africa bounds
         if (isInsideAfrica(area.x, area.y)) {
           const newDot = new InfectionDot(
-            x + Math.random() * 50 - 25, // Random position around the area
-            y + Math.random() * 50 - 25, 
+            x + Math.random() * 25 - 12.5, // Smaller random offset for starting positions
+            y + Math.random() * 25 - 12.5, 
             2 // Starting radius
           );
           infectionDots.push(newDot);
