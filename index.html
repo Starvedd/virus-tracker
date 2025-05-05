@@ -132,7 +132,6 @@
 
     // Function to check if the dot is within Africa's border (using polygon check)
     function isInsideAfrica(x, y) {
-      // Africa's borders form a polygon, so use a ray-casting algorithm to check if a point is inside the polygon.
       let inside = false;
       let j = africaBorders.length - 1;
       for (let i = 0; i < africaBorders.length; i++) {
@@ -153,14 +152,19 @@
     function simulateInfection() {
       const numDotsToAdd = 3; // Number of dots to add per simulation
       for (let i = 0; i < numDotsToAdd; i++) {
+        // Select a random position near the Africa borders
         const area = africaBorders[Math.floor(Math.random() * africaBorders.length)];
         const { x, y } = convertToPixelCoords(area.x, area.y);
 
-        // Ensure the dot stays within Africa bounds
-        if (isInsideAfrica(x, y)) {
+        // Ensure the dot stays within Africa bounds (a bit inside the border)
+        let dotX = x + Math.random() * 20 - 10; // Keep within 10px inside Africa's border
+        let dotY = y + Math.random() * 20 - 10; // Keep within 10px inside Africa's border
+
+        // Make sure the dot is inside Africa
+        if (isInsideAfrica(dotX, dotY)) {
           const newDot = new InfectionDot(
-            x + Math.random() * 25 - 12.5, // Smaller random offset for starting positions
-            y + Math.random() * 25 - 12.5, 
+            dotX,
+            dotY,
             2 // Starting radius
           );
           infectionDots.push(newDot);
