@@ -17,9 +17,10 @@
             width: 100vw;
             height: 100vh;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2000px-World_map_-_low_resolution.svg.png');
-            background-size: cover; /* Ensure the image covers the container */
-            background-position: center; /* Keep the image centered */
-            overflow: hidden;
+            background-size: contain; /* Ensure the map fits within the container */
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden; /* Hide anything that exceeds the container size */
         }
 
         .marker {
@@ -30,7 +31,7 @@
             border: 2px solid white;
             border-radius: 50%;
             box-shadow: 0 0 6px red;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Centers the marker */
         }
 
         #price-box {
