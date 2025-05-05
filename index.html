@@ -60,6 +60,8 @@
   <script>
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
+    
+    // Ensure the canvas always fits the window
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -161,13 +163,14 @@
     InfectionDot.prototype.update = function () {
       const maxRadius = this.calculateMaxRadius();
       if (this.radius < maxRadius) {
-        this.radius += this.growthRate; // Continue growing until it reaches the max allowed radius
+        this.radius += this.growthRate;
       }
     };
 
-    // Calculate the maximum radius that keeps the infection dot within the African borders
+    // Calculate maximum radius based on distance to nearest Africa border
     InfectionDot.prototype.calculateMaxRadius = function () {
       let maxRadius = Infinity;
+
       for (let i = 0; i < africaBorderCoordinates.length; i++) {
         const borderCoord = africaBorderCoordinates[i];
         const distance = Math.sqrt(
