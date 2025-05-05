@@ -140,17 +140,18 @@
         dot.update();
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 0, 0, 0.5)`; // Transparent red color
+        // Updated dot color (lighter red with 40% opacity)
+        ctx.fillStyle = `rgba(255, 50, 50, 0.4)`; // Lighter red with 40% opacity
         ctx.fill();
       });
     }
 
-    // Infection dot constructor
+    // Infection dot constructor function
     function InfectionDot(x, y, radius) {
       this.x = x;
       this.y = y;
       this.radius = radius;
-      this.growthRate = 1.5;  // Growth rate for infection dots
+      this.growthRate = 0.5; // Growth rate of the infection
     }
 
     InfectionDot.prototype.update = function () {
