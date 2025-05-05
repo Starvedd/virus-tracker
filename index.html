@@ -60,35 +60,48 @@
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Random coordinates for infection spread (these are rough estimates of locations on the world map)
+    // Coordinates are relative to the map size.
     const infectionAreas = [
-      {x: 100, y: 150}, // Africa
-      {x: 400, y: 100}, // North America
-      {x: 600, y: 200}, // South America
-      {x: 500, y: 300}, // Europe
-      {x: 250, y: 450}, // Australia
-      {x: 300, y: 200}, // Asia
-      // Add more coordinates for other areas...
+      {x: 0.1, y: 0.3}, // Africa (roughly 10% from left, 30% from top)
+      {x: 0.7, y: 0.1}, // North America
+      {x: 0.8, y: 0.6}, // South America
+      {x: 0.55, y: 0.2}, // Europe
+      {x: 0.4, y: 0.8}, // Australia
+      {x: 0.3, y: 0.5}, // Asia
+      // More coordinates can be added here...
     ];
 
-    // Function to draw random infection dots
+    // Convert relative coordinates to pixel positions
+    function convertToPixelCoords(relX, relY) {
+      const mapWidth = canvas.width;
+      const mapHeight = canvas.height;
+      return {
+        x: relX * mapWidth,
+        y: relY * mapHeight
+      };
+    }
+
+    // Function to draw infection dots
     function drawInfectionDots() {
       // Clear previous dots
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Set the number of infection dots per update
-      const numDots = 10;
+      const numDots = 20;
 
       for (let i = 0; i < numDots; i++) {
         // Get a random infection area from the list
         const area = infectionAreas[Math.floor(Math.random() * infectionAreas.length)];
 
+        // Convert to pixel coordinates based on map size
+        const {x, y} = convertToPixelCoords(area.x, area.y);
+
         // Simulate the infection radius based on the infection rate (you can adjust this)
-        const radius = Math.random() * 10 + 5;  // Random radius between 5 and 15
+        const radius = Math.random() * 15 + 10;  // Random radius between 10 and 25 for visibility
 
         // Draw the infection dot
         ctx.beginPath();
-        ctx.arc(area.x + Math.random() * 50 - 25, area.y + Math.random() * 50 - 25, radius, 0, Math.PI * 2);
+        ctx.arc(x + Math.random() * 50 - 25, y + Math.random() * 50 - 25, radius, 0, Math.PI * 2);
         ctx.fillStyle = 'red';
         ctx.fill();
       }
