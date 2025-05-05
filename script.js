@@ -1,50 +1,66 @@
-// Initialize the map
-const map = L.map('map', {
-    center: [51.505, -0.09],  // Initial center of the map (London)
-    zoom: 2,                  // Initial zoom level
-    minZoom: 2,               // Minimum zoom level
-    maxZoom: 6,               // Maximum zoom level
-    zoomControl: true,        // Enable zoom control
-    scrollWheelZoom: true,    // Allow zoom with mouse wheel
-    touchZoom: true,          // Enable pinch zoom
-    keyboard: true,           // Enable zoom with keyboard
-    dragging: true,           // Allow dragging the map
-    worldCopyJump: false,     // Prevent the map from wrapping horizontally
-    attributionControl: true // Show the attribution control
-});
+let previousPrice = null;
+let infectionIntensity = 1;
+const infectedRegions = {};
 
-// Add OpenStreetMap tile layer
+const map = L.map('map').setView([20, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+  attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Add a marker to the map
-L.marker([51.505, -0.09]).addTo(map)
-    .bindPopup('Meme Coin Region Price is fluctuating.')
-    .openPopup();
+const cities = [
+  { name: "New York", coords: [40.7128, -74.0060] },
+  { name: "London", coords: [51.5074, -0.1278] },
+  { name: "Tokyo", coords: [35.6895, 139.6917] },
+  { name: "Sydney", coords: [-33.8688, 151.2093] },
+  { name: "Rio de Janeiro", coords: [-22.9068, -43.1729] },
+  { name: "Cairo", coords: [30.0444, 31.2357] },
+  { name: "Moscow", coords: [55.7558, 37.6173] },
+  { name: "Cape Town", coords: [-33.9249, 18.4241] }
+];
 
-// Update the meme coin price every 3 seconds
-let memeCoinPrice = 1.00;
-const priceElement = document.getElementById('price');
+cities.forEach(city => {
+  infectedRegions[city.name] = {
+    ...city,
+    circle: L.circle(city.coords, {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.3,
+      radius: 20000
+    }).addTo(map)
+  };
+});
 
-// Function to fluctuate the meme coin price
-function fluctuatePrice() {
-    const fluctuation = (Math.random() - 0.5) * 0.5;  // ±0.25 per update
-    memeCoinPrice = Math.max(0.01, memeCoinPrice + fluctuation);
-    priceElement.innerText = `Meme Coin Price: $${memeCoinPrice.toFixed(2)}`;
+async function fetchPrice() {
+  try {
+    const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/solana/So11111111111111111111111111111111111111112');
+    const data = await response.json();
+    const currentPrice = parseFloat(data.pair.priceUsd);
+
+    if (previousPrice !== null) {
+      const change = ((currentPrice - previousPrice) / previousPrice) * 100;
+      console.log(`Price change: ${change.toFixed(2)}%`);
+
+      if (change > 0) {
+        infectionIntensity += change / 2;
+      } else {
+        infectionIntensity = Math.max(1, infectionIntensity + change / 2);
+      }
+
+      updateInfection();
+    }
+
+    previousPrice = currentPrice;
+  } catch (error) {
+    console.error("Error fetching price:", error);
+  }
 }
 
-// Update price every 3 seconds
-setInterval(fluctuatePrice, 3000);
-
-// Add some example regions
-function addRegionMarker(lat, lon, regionName) {
-    L.marker([lat, lon]).addTo(map)
-        .bindPopup(`${regionName} Price is fluctuating.`);
+function updateInfection() {
+  Object.values(infectedRegions).forEach(region => {
+    const newRadius = 20000 * infectionIntensity;
+    region.circle.setRadius(newRadius);
+  });
 }
 
-// Adding some regions
-addRegionMarker(40.7128, -74.0060, "New York");
-addRegionMarker(34.0522, -118.2437, "Los Angeles");
-addRegionMarker(48.8566, 2.3522, "Paris");
-addRegionMarker(35.6762, 139.6503, "Tokyo");
+setInterval(fetchPrice, 60000); // Update every 60 seconds
+fetchPrice(); // Initial fetch
