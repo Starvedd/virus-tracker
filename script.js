@@ -2,19 +2,16 @@ const priceDisplay = document.getElementById('price');
 const canvas = document.getElementById('infectionCanvas');
 const ctx = canvas.getContext('2d');
 
-// Replace with your actual coin ID from Pump.fun
-const COIN_ID = 'your_coin_id_here'; 
+// Replace this with your actual coin ID when it's live
+// For now, we are using a mock price that increases over time
+let simulatedPrice = 0.01;  // Start price (mock)
 
 async function fetchPrice() {
-  try {
-    const res = await fetch(`https://pump.fun/api/coin/${COIN_ID}`);
-    const data = await res.json();
-    const price = parseFloat(data.price).toFixed(4);
-    priceDisplay.textContent = `Current Price: ${price} SOL`;
-    return price;
-  } catch (err) {
-    console.error("Error fetching price:", err);
-  }
+  // Simulating price increase for demo purposes
+  simulatedPrice += 0.001;  // Increase price by 0.001 SOL every time it's called
+  const price = simulatedPrice.toFixed(4);
+  priceDisplay.textContent = `Current Price: ${price} SOL`;
+  return price;
 }
 
 let infectionLevel = 0;
@@ -36,9 +33,9 @@ function drawInfection(level) {
 async function updateVisuals() {
   const price = await fetchPrice();
   if (!price) return;
-  infectionLevel = Math.floor(price / 0.005);
+  infectionLevel = Math.floor(price / 0.005);  // Adjust this to control infection spread speed
   drawInfection(infectionLevel);
 }
 
-setInterval(updateVisuals, 10000);
+setInterval(updateVisuals, 10000);  // Update every 10 seconds
 updateVisuals();
