@@ -17,9 +17,10 @@
             position: relative;
             height: 100vh;
             background-image: url('path/to/your-world-map.jpg'); /* Path to your world map image */
-            background-size: contain; /* Ensure the image keeps its aspect ratio */
+            background-size: contain; /* Try 'cover' or 'contain' */
             background-position: center;
             background-repeat: no-repeat;
+            background-color: #f0f0f0; /* Default background in case image is missing */
         }
 
         /* Markers will be absolutely positioned on the map */
