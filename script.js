@@ -7,6 +7,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+// Constrain map bounds to prevent endless dragging
+const bounds = L.latLngBounds(
+  L.latLng(-85, -180),
+  L.latLng(85, 180)
+);
+map.setMaxBounds(bounds);
+map.on('drag', function () {
+  map.panInsideBounds(bounds, { animate: false });
+});
+
+// Cities to infect
 const cities = [
   { name: "New York", coords: [40.7128, -74.0060] },
   { name: "London", coords: [51.5074, -0.1278] },
@@ -18,6 +29,7 @@ const cities = [
   { name: "Cape Town", coords: [-33.9249, 18.4241] }
 ];
 
+// Add infected city circles
 cities.forEach(city => {
   infectedRegions[city.name] = {
     ...city,
@@ -30,6 +42,7 @@ cities.forEach(city => {
   };
 });
 
+// Fetch token price from Dexscreener
 async function fetchPrice() {
   try {
     const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/solana/So11111111111111111111111111111111111111112');
@@ -55,6 +68,7 @@ async function fetchPrice() {
   }
 }
 
+// Adjust infection radius based on price changes
 function updateInfection() {
   Object.values(infectedRegions).forEach(region => {
     const newRadius = 20000 * infectionIntensity;
@@ -62,5 +76,6 @@ function updateInfection() {
   });
 }
 
-setInterval(fetchPrice, 60000); // Update every 60 seconds
+// Run every 60 seconds
+setInterval(fetchPrice, 60000);
 fetchPrice(); // Initial fetch
