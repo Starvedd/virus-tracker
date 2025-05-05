@@ -85,14 +85,13 @@
       canvas.height = window.innerHeight;
     });
 
-    // Coordinates for different continents (relative to canvas size)
+    // Africa-specific infection regions (relative coordinates)
     const infectionAreas = [
-      {x: 0.72, y: 0.25}, // North America
-      {x: 0.76, y: 0.60}, // South America
-      {x: 0.18, y: 0.34}, // Africa
-      {x: 0.28, y: 0.19}, // Europe
-      {x: 0.52, y: 0.65}, // Australia
-      {x: 0.40, y: 0.30}, // Asia
+      {x: 0.427, y: 0.494},  // Algeria
+      {x: 0.667, y: 0.601},  // Central Africa
+      {x: 0.683, y: 0.776},  // South Africa
+      {x: 0.878, y: 0.624},  // Kenya
+      {x: 0.553, y: 0.636},  // Above Angola
     ];
 
     // Infection Dot Object
@@ -118,18 +117,37 @@
       };
     }
 
+    // Function to check if the dot is within the Africa region
+    function isInsideAfrica(x, y) {
+      // African map boundaries are estimated based on the provided coordinates.
+      // Let's limit the infection dots to stay within Africa:
+      const africaBounds = {
+        minX: 0.15, // West Africa boundary (approx)
+        maxX: 0.95, // East Africa boundary (approx)
+        minY: 0.1,  // North Africa boundary (approx)
+        maxY: 0.85, // South Africa boundary (approx)
+      };
+      
+      // Check if the coordinates are within the Africa region
+      return x >= africaBounds.minX && x <= africaBounds.maxX && y >= africaBounds.minY && y <= africaBounds.maxY;
+    }
+
     // Simulate the infection spreading
     function simulateInfection() {
-      const numDotsToAdd = 3;
+      const numDotsToAdd = 3; // Number of dots to add per simulation
       for (let i = 0; i < numDotsToAdd; i++) {
         const area = infectionAreas[Math.floor(Math.random() * infectionAreas.length)];
         const { x, y } = convertToPixelCoords(area.x, area.y);
-        const newDot = new InfectionDot(
-          x + Math.random() * 50 - 25, // Random position around the area
-          y + Math.random() * 50 - 25, 
-          2 // Starting radius
-        );
-        infectionDots.push(newDot);
+        
+        // Ensure the dot stays within Africa bounds
+        if (isInsideAfrica(area.x, area.y)) {
+          const newDot = new InfectionDot(
+            x + Math.random() * 50 - 25, // Random position around the area
+            y + Math.random() * 50 - 25, 
+            2 // Starting radius
+          );
+          infectionDots.push(newDot);
+        }
       }
 
       // Clear canvas and update the infection dots
