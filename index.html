@@ -85,7 +85,7 @@
       canvas.height = window.innerHeight;
     });
 
-    // Africa border coordinates
+    // Africa border coordinates (from your input)
     const africaBorders = [
       { x: 0.433, y: 0.521 }, { x: 0.433, y: 0.545 },
       { x: 0.435, y: 0.584 }, { x: 0.455, y: 0.611 },
@@ -130,16 +130,23 @@
       };
     }
 
-    // Function to check if the dot is within Africa's border
+    // Function to check if the dot is within Africa's border (using polygon check)
     function isInsideAfrica(x, y) {
-      // Africa's borders from the provided coordinates
-      let minX = Math.min(...africaBorders.map(c => c.x));
-      let maxX = Math.max(...africaBorders.map(c => c.x));
-      let minY = Math.min(...africaBorders.map(c => c.y));
-      let maxY = Math.max(...africaBorders.map(c => c.y));
+      // Africa's borders form a polygon, so use a ray-casting algorithm to check if a point is inside the polygon.
+      let inside = false;
+      let j = africaBorders.length - 1;
+      for (let i = 0; i < africaBorders.length; i++) {
+        const xi = africaBorders[i].x * canvas.width;
+        const yi = africaBorders[i].y * canvas.height;
+        const xj = africaBorders[j].x * canvas.width;
+        const yj = africaBorders[j].y * canvas.height;
 
-      // Check if the dot is within the border range
-      return x >= minX && x <= maxX && y >= minY && y <= maxY;
+        const intersect = ((yi > y) !== (yj > y)) &&
+          (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+        j = i;
+      }
+      return inside;
     }
 
     // Simulate the infection spreading only within Africa
@@ -150,7 +157,7 @@
         const { x, y } = convertToPixelCoords(area.x, area.y);
 
         // Ensure the dot stays within Africa bounds
-        if (isInsideAfrica(area.x, area.y)) {
+        if (isInsideAfrica(x, y)) {
           const newDot = new InfectionDot(
             x + Math.random() * 25 - 12.5, // Smaller random offset for starting positions
             y + Math.random() * 25 - 12.5, 
