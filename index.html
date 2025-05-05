@@ -136,6 +136,7 @@
 
       // Clear the canvas and redraw the dots
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'lighter'; // Prevent darkening overlap
       infectionDots.forEach((dot) => {
         dot.update();
         ctx.beginPath();
@@ -155,7 +156,6 @@
     }
 
     InfectionDot.prototype.update = function () {
-      // Calculate maximum radius without crossing the border
       let maxRadius = this.calculateMaxRadius();
       if (this.radius < maxRadius) {
         this.radius += this.growthRate; // Continue growing until it reaches the max allowed radius
