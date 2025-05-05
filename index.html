@@ -62,4 +62,89 @@
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Ensure that the canvas is the correct size based on the
+    // Ensure that the canvas is the correct size based on the window dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Infection areas (relative coordinates, use a grid-like representation for continents)
+    const infectionAreas = [
+      {x: 0.1, y: 0.3}, // Africa
+      {x: 0.7, y: 0.1}, // North America
+      {x: 0.8, y: 0.6}, // South America
+      {x: 0.55, y: 0.2}, // Europe
+      {x: 0.4, y: 0.8}, // Australia
+      {x: 0.3, y: 0.5}, // Asia
+    ];
+
+    // Function to convert relative coordinates to pixel coordinates
+    function convertToPixelCoords(relX, relY) {
+      const mapWidth = canvas.width;
+      const mapHeight = canvas.height;
+      return {
+        x: relX * mapWidth,
+        y: relY * mapHeight
+      };
+    }
+
+    // Infection dot object
+    function InfectionDot(x, y) {
+      this.x = x;
+      this.y = y;
+      this.radius = Math.random() * 3 + 1;  // Start with a small radius between 1 and 4
+      this.growthRate = Math.random() * 0.2 + 0.1;  // Growth rate for the dot size
+      this.opacity = 1;  // Start with fully visible dots
+    }
+
+    // Update the dot's size and opacity
+    InfectionDot.prototype.update = function() {
+      this.radius += this.growthRate;  // Grow the dot
+      this.opacity -= 0.005;  // Make it less visible as it grows (optional)
+
+      // Constrain opacity between 0 and 1
+      if (this.opacity < 0) {
+        this.opacity = 0;
+      }
+    };
+
+    // Function to draw infection dots
+    const infectionDots = [];
+    function drawInfectionDots() {
+      // Clear previous dots
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Add new infection dots
+      const numDots = 10; // Number of new infection dots per frame
+
+      for (let i = 0; i < numDots; i++) {
+        // Get a random infection area from the list
+        const area = infectionAreas[Math.floor(Math.random() * infectionAreas.length)];
+
+        // Convert to pixel coordinates based on map size
+        const {x, y} = convertToPixelCoords(area.x, area.y);
+
+        // Create a new infection dot
+        const newDot = new InfectionDot(x + Math.random() * 50 - 25, y + Math.random() * 50 - 25);
+        infectionDots.push(newDot);
+      }
+
+      // Draw and update each infection dot
+      infectionDots.forEach(dot => {
+        dot.update();  // Update dot size and opacity
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 0, 0, ${dot.opacity})`;  // Red color with variable opacity
+        ctx.fill();
+      });
+    }
+
+    // Run the infection every 2 seconds
+    setInterval(drawInfectionDots, 2000);
+
+    // Optional: Resize canvas when the window is resized
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
