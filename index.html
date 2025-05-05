@@ -200,18 +200,8 @@
       canvas.height = window.innerHeight;
     });
 
-    // Disable browser zoom scaling by fixing the scaling using transform scale
-    let scale = 1;
-
-    // Handle zooming manually with keys for testing
-    document.addEventListener('keydown', function(e) {
-      if (e.key === '+' || e.key === '=') {
-        scale *= 1.1;
-      } else if (e.key === '-') {
-        scale /= 1.1;
-      }
-      canvas.style.transform = `scale(${scale})`;
-    });
+    // Disable zoom by preventing the zoom feature in browser
+    document.body.style.zoom = "100%"; // Disable zoom by forcing default zoom to 100%
 
   </script>
 </body>
