@@ -132,7 +132,7 @@
       return x >= africaBounds.minX && x <= africaBounds.maxX && y >= africaBounds.minY && y <= africaBounds.maxY;
     }
 
-    // Simulate the infection spreading
+    // Simulate the infection spreading only within the African region
     function simulateInfection() {
       const numDotsToAdd = 3; // Number of dots to add per simulation
       for (let i = 0; i < numDotsToAdd; i++) {
