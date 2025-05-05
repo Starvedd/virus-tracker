@@ -1,69 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Coin World Map</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: black;
-        }
-
-        #map-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2000px-World_map_-_low_resolution.svg.png');
-            background-size: contain; /* Ensure the map fits within the container */
-            background-position: center;
-            background-repeat: no-repeat;
-            overflow: hidden; /* Hide anything that exceeds the container size */
-        }
-
-        .marker {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background-color: red;
-            border: 2px solid white;
-            border-radius: 50%;
-            box-shadow: 0 0 6px red;
-            transform: translate(-50%, -50%); /* Centers the marker */
-        }
-
-        #price-box {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #00ffcc;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 18px;
-            z-index: 10;
-            border: 1px solid #00ffcc;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solana Infection Game</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    #map {
+      height: 100vh;
+      width: 100vw;
+    }
+    .infected {
+      background-color: red;
+    }
+  </style>
 </head>
 <body>
+  <div id="map"></div>
 
-<div id="price-box">Meme Coin Price: $1.00</div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Globals
+    let previousPrice = null;
+    let infectionIntensity = 1;
+    const infectedRegions = {};
 
-<div id="map-container">
-    <!-- Sample "infected" locations (Virus Spread) -->
-    <div class="marker" style="top: 35%; left: 45%;"></div> <!-- USA -->
-    <div class="marker" style="top: 38%; left: 62%;"></div> <!-- Europe -->
-    <div class="marker" style="top: 50%; left: 75%;"></div> <!-- India -->
-    <div class="marker" style="top: 25%; left: 85%;"></div> <!-- Japan -->
-    <div class="marker" style="top: 70%; left: 80%;"></div> <!-- Australia -->
-    <div class="marker" style="top: 55%; left: 20%;"></div> <!-- Brazil -->
-</div>
+    // Initialize the map
+    const map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-<script src="script.js"></script>
+    // Define key locations to simulate infection spread
+    const cities = [
+      { name: 'New York', coords: [40.7128, -74.006] },
+      { name: 'London', coords: [51.5074, -0.1278] },
+      { name: 'Tokyo', coords: [35.6895, 139.6917] },
+      { name: 'Sydney', coords: [-33.8688, 151.2093] },
+      { name: 'Cape Town', coords: [-33.9249, 18.4241] }
+    ];
 
+    // Draw initial markers
+    cities.forEach(city => {
+      infectedRegions[city.name] = {
+        marker: L.circle(city.coords, { radius: 10000, color: 'green' }).addTo(map),
+        level: 0
+      };
+    });
+
+    async function fetchTokenPrice() {
+      try {
+        const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/solana/So11111111111111111111111111111111111111112');
+        const data = await response.json();
+        return parseFloat(data.pairs[0].priceUsd);
+      } catch (err) {
+        console.error('Error fetching price:', err);
+        return null;
+      }
+    }
+
+    function updateInfectionOnMap(changePercent) {
+      cities.forEach(city => {
+        let infection = infectedRegions[city.name];
+        infection.level += changePercent;
+        if (infection.level < 0) infection.level = 0;
+
+        const radius = 10000 + infection.level * 10000;
+        const color = infection.level > 5 ? 'red' : infection.level > 2 ? 'orange' : 'green';
+
+        map.removeLayer(infection.marker);
+        infection.marker = L.circle(city.coords, {
+          radius,
+          color
+        }).addTo(map);
+      });
+    }
+
+    async function updateGameState() {
+      const price = await fetchTokenPrice();
+      if (price && previousPrice !== null) {
+        const change = price - previousPrice;
+        const percentChange = (change / previousPrice) * 100;
+        console.log(`Price change: ${percentChange.toFixed(2)}%`);
+        updateInfectionOnMap(percentChange);
+      }
+      previousPrice = price;
+    }
+
+    // Update game every minute
+    setInterval(updateGameState, 60000);
+    updateGameState(); // Initial call
+  </script>
 </body>
 </html>
