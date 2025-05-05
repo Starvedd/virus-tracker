@@ -44,7 +44,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: auto; /* Allow clicking */
+      pointer-events: auto;
       width: 100%;
       height: 100%;
     }
@@ -113,7 +113,7 @@
       const numDotsToAdd = 3;
       for (let i = 0; i < numDotsToAdd; i++) {
         let x, y, pixelCoords;
-        
+
         // Pick random position inside Africa until we get a valid spot
         do {
           // Pick random position within the map
@@ -127,7 +127,7 @@
           if (isInsideAfrica(pixelCoords.x, pixelCoords.y)) {
             break;
           }
-        } while (true); // Keep looping until a valid position inside Africa is found
+        } while (true);
 
         // Create and store a new infection dot
         const newDot = new InfectionDot(pixelCoords.x, pixelCoords.y, 2);
@@ -150,21 +150,28 @@
       this.x = x;
       this.y = y;
       this.radius = radius;
-      this.growthRate = 2.0;  // Increased growth rate for faster expansion
+      this.growthRate = 1.5;  // Growth rate for infection dots
     }
 
     InfectionDot.prototype.update = function () {
-      this.radius += this.growthRate;
-
-      // Check if any part of the dot exceeds the African boundaries
-      if (!isInsideAfrica(this.x + this.radius, this.y + this.radius) ||
-          !isInsideAfrica(this.x - this.radius, this.y - this.radius) ||
-          !isInsideAfrica(this.x + this.radius, this.y - this.radius) ||
-          !isInsideAfrica(this.x - this.radius, this.y + this.radius)) {
-
-        // Stop the growth by setting the radius to the maximum possible value before crossing the border
-        this.radius -= this.growthRate;
+      // Calculate maximum radius without crossing the border
+      let maxRadius = this.calculateMaxRadius();
+      if (this.radius < maxRadius) {
+        this.radius += this.growthRate; // Continue growing until it reaches the max allowed radius
       }
+    };
+
+    // Calculate the maximum radius that keeps the infection dot within the African borders
+    InfectionDot.prototype.calculateMaxRadius = function () {
+      // For simplicity, we'll just calculate a basic check for distance
+      // from the center of the dot to the nearest boundary of Africa.
+      let maxRadius = Infinity;
+      for (let i = 0; i < africaBorderCoordinates.length; i++) {
+        let borderCoord = africaBorderCoordinates[i];
+        let distance = Math.sqrt(Math.pow(this.x - borderCoord.x * canvas.width, 2) + Math.pow(this.y - borderCoord.y * canvas.height, 2));
+        maxRadius = Math.min(maxRadius, distance); // Keep the smallest distance as the max radius
+      }
+      return maxRadius;
     };
 
     const infectionDots = [];
