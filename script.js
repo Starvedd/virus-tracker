@@ -2,20 +2,22 @@ let previousPrice = null;
 let infectionIntensity = 1;
 const infectedRegions = {};
 
-const map = L.map('map').setView([20, 0], 2);
+const map = L.map('map', {
+  minZoom: 2,
+  maxZoom: 5,
+  maxBounds: [
+    [-85, -180], // Southwest corner
+    [85, 180]    // Northeast corner
+  ],
+  maxBoundsViscosity: 1.0,
+  worldCopyJump: false,
+  zoomControl: true
+}).setView([20, 0], 2);
+
+// Tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
-
-// Constrain map bounds to prevent endless dragging
-const bounds = L.latLngBounds(
-  L.latLng(-85, -180),
-  L.latLng(85, 180)
-);
-map.setMaxBounds(bounds);
-map.on('drag', function () {
-  map.panInsideBounds(bounds, { animate: false });
-});
 
 // Cities to infect
 const cities = [
