@@ -112,8 +112,7 @@
     function simulateInfection() {
       const numDotsToAdd = 3;
       for (let i = 0; i < numDotsToAdd; i++) {
-        let x, y;
-        let pixelCoords;
+        let x, y, pixelCoords;
         
         // Pick random position inside Africa until we get a valid spot
         do {
@@ -121,6 +120,7 @@
           x = Math.random();
           y = Math.random();
 
+          // Convert to pixel coordinates
           pixelCoords = convertToPixelCoords(x, y);
 
           // Check if the position is inside Africa
