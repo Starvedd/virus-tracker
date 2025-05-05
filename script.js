@@ -1,79 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Coin World Map</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: black;
-        }
+let price = 1.00;
+const priceBox = document.getElementById('price-box');
 
-        #map-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2000px-World_map_-_low_resolution.svg.png');
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-        }
+function updatePrice() {
+    const change = (Math.random() - 0.5) * 0.1; // -0.05 to +0.05
+    price = Math.max(0.01, price + change);
+    priceBox.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
+}
 
-        .marker {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background-color: red;
-            border: 2px solid white;
-            border-radius: 50%;
-            box-shadow: 0 0 6px red;
-            transform: translate(-50%, -50%);
-        }
-
-        #price-box {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #00ffcc;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 18px;
-            z-index: 10;
-            border: 1px solid #00ffcc;
-        }
-    </style>
-</head>
-<body>
-
-<div id="price-box">Meme Coin Price: $1.00</div>
-
-<div id="map-container">
-    <!-- Sample "infected" locations -->
-    <div class="marker" style="top: 35%; left: 45%;"></div> <!-- USA -->
-    <div class="marker" style="top: 38%; left: 62%;"></div> <!-- Europe -->
-    <div class="marker" style="top: 50%; left: 75%;"></div> <!-- India -->
-    <div class="marker" style="top: 25%; left: 85%;"></div> <!-- Japan -->
-    <div class="marker" style="top: 70%; left: 80%;"></div> <!-- Australia -->
-    <div class="marker" style="top: 55%; left: 20%;"></div> <!-- Brazil -->
-</div>
-
-<script>
-    let price = 1.00;
-    const priceBox = document.getElementById('price-box');
-
-    function updatePrice() {
-        const change = (Math.random() - 0.5) * 0.1; // -0.05 to +0.05
-        price = Math.max(0.01, price + change);
-        priceBox.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
-    }
-
-    setInterval(updatePrice, 3000);
-</script>
-
-</body>
-</html>
+setInterval(updatePrice, 3000);
