@@ -14,12 +14,16 @@
       text-align: center;
       overflow: hidden;
       height: 100%;
+      width: 100%;
+      position: relative;
     }
 
     .map-container {
-      position: relative;
+      position: absolute;
       width: 100%;
-      height: 100vh;
+      height: 100%;
+      top: 0;
+      left: 0;
       overflow: hidden;
     }
 
@@ -32,7 +36,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 0;
     }
 
     .title {
@@ -53,7 +56,6 @@
       left: 0;
       pointer-events: none;
       z-index: 1;
-      transform-origin: top left;
     }
 
   </style>
@@ -73,7 +75,7 @@
     let offsetX = 0;
     let offsetY = 0;
 
-    // Ensure the canvas always fits the window
+    // Set initial canvas size
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -196,16 +198,7 @@
     // Set interval for infection spread
     setInterval(simulateInfection, 100);
 
-    // Adjust canvas size on window resize
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-
-    // Disable zoom by preventing the zoom feature in browser
-    document.body.style.zoom = "100%"; // Disable zoom by forcing default zoom to 100%
-
-    // Handle zooming with mouse wheel
+    // Handle custom zooming with mouse wheel
     canvas.addEventListener('wheel', (event) => {
       event.preventDefault(); // Prevent default zoom behavior
 
@@ -216,8 +209,15 @@
         scale -= 0.1;
       }
 
-      // Apply scaling to the canvas only (not the whole page)
-      canvas.style.transform = `scale(${scale})`;
+      // Apply scaling to the map and infection canvas only
+      const mapContainer = document.querySelector('.map-container');
+      mapContainer.style.transform = `scale(${scale})`;
+    });
+
+    // Adjust canvas size on window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
 
   </script>
