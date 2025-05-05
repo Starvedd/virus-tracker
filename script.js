@@ -1,53 +1,39 @@
-// Define the bounding box (limits for panning and zooming)
-// These are the corners of the region you want to keep the map within
-const bounds = [[30.0, -150.0], [60.0, 0.0]];  // Example: from 30°N, 150°W to 60°N, 0°E
-
-// Initialize the map with options
-const map = L.map('map', {
-    center: [51.505, -0.09], // Initial map center (e.g., London)
-    zoom: 2, // Initial zoom level
-    minZoom: 2, // Minimum zoom level
-    maxZoom: 6, // Maximum zoom level
-    zoomControl: false, // Disable zoom control
-    scrollWheelZoom: false, // Disable zoom with mouse wheel
-    dragging: true, // Allow dragging the map
-    maxBounds: bounds, // Set the bounds for the map's panning
-    maxBoundsViscosity: 1.0 // Prevent panning beyond the set bounds
-});
-
-// Add OpenStreetMap tile layer to the map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-// Set up the initial meme coin price
-let memeCoinPrice = 1.00;
-const priceElement = document.getElementById('price');
-
-// Function to update the meme coin price
-function fluctuatePrice() {
-    const fluctuation = (Math.random() - 0.5) * 0.1; // Fluctuates the price by a random amount between -0.05 and 0.05
-    memeCoinPrice = Math.max(0.01, memeCoinPrice + fluctuation); // Ensure the price doesn't go below $0.01
-    priceElement.innerText = `Meme Coin Price: $${memeCoinPrice.toFixed(2)}`;
-}
-
-// Add a marker to the map to represent a region (example)
-const marker = L.marker([51.505, -0.09]).addTo(map)
-    .bindPopup('<b>Meme Coin Region</b><br>Price is fluctuating.')
-    .openPopup();
-
-// Update the price every 3 seconds
-setInterval(fluctuatePrice, 3000); // Update the price every 3 seconds
-
-// Example of adding more markers as the simulation grows (for more regions)
-function addRegionMarker(lat, lon, regionName) {
-    L.marker([lat, lon]).addTo(map)
-        .bindPopup(`<b>${regionName}</b><br>Price is fluctuating.`)
-        .openPopup();
-}
-
-// Adding a few example regions
-addRegionMarker(40.7128, -74.0060, "New York"); // New York
-addRegionMarker(34.0522, -118.2437, "Los Angeles"); // Los Angeles
-addRegionMarker(48.8566, 2.3522, "Paris"); // Paris
-addRegionMarker(35.6762, 139.6503, "Tokyo"); // Tokyo
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Meme Coin Price</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Basic styling for the map */
+        #map {
+            height: 100vh;
+        }
+        
+        /* Optional styling for the price display */
+        #price {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Price display area -->
+    <div id="price">Meme Coin Price: $1.00</div>
+    
+    <!-- Map container -->
+    <div id="map"></div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Your custom script -->
+    <script src="script.js"></script>
+</body>
+</html>
