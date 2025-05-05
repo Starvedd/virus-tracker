@@ -45,4 +45,6 @@ function addRegionMarker(lat, lon, regionName) {
 
 // Adding some regions
 addRegionMarker(40.7128, -74.0060, "New York");
-add
+addRegionMarker(34.0522, -118.2437, "Los Angeles");
+addRegionMarker(48.8566, 2.3522, "Paris");
+addRegionMarker(35.6762, 139.6503, "Tokyo");
