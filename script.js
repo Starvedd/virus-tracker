@@ -1,41 +1,29 @@
+// Get the price display and canvas context
 const priceDisplay = document.getElementById('price');
 const canvas = document.getElementById('infectionCanvas');
 const ctx = canvas.getContext('2d');
 
-// Replace this with your actual coin ID when it's live
-// For now, we are using a mock price that increases over time
-let simulatedPrice = 0.01;  // Start price (mock)
-
-async function fetchPrice() {
-  // Simulating price increase for demo purposes
-  simulatedPrice += 0.001;  // Increase price by 0.001 SOL every time it's called
-  const price = simulatedPrice.toFixed(4);
-  priceDisplay.textContent = `Current Price: ${price} SOL`;
-  return price;
+// Function to simulate a price change (mock data)
+function getSimulatedPrice() {
+  return Math.random() * (0.1 - 0.01) + 0.01; // Random price between 0.01 and 0.1 SOL
 }
 
-let infectionLevel = 0;
-
-function drawInfection(level) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Function to visualize the infection
+function drawInfection(price) {
+  const infectionRate = price * 1000; // Increase the size based on price
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, infectionRate, 0, Math.PI * 2);
   ctx.fillStyle = 'red';
-
-  for (let i = 0; i < level; i++) {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    const radius = Math.random() * 10 + 5;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.fill();
 }
 
-async function updateVisuals() {
-  const price = await fetchPrice();
-  if (!price) return;
-  infectionLevel = Math.floor(price / 0.005);  // Adjust this to control infection spread speed
-  drawInfection(infectionLevel);
+// Update price and infection every 2 seconds for demo
+function updateVisuals() {
+  const price = getSimulatedPrice(); // Get the simulated price
+  priceDisplay.textContent = `Current Price: ${price.toFixed(4)} SOL`; // Display price
+  drawInfection(price); // Update the infection visual
 }
 
-setInterval(updateVisuals, 10000);  // Update every 10 seconds
-updateVisuals();
+// Run the update every 2 seconds for demo purposes
+setInterval(updateVisuals, 2000);
