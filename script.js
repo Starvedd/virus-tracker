@@ -1,7 +1,7 @@
-// Initialize the map
+// Ensure Leaflet's map is initialized properly
 const map = L.map('map').setView([51.505, -0.09], 2); // Centered around the world map
 
-// Add tile layer (background map)
+// Tile layer for the map (background map)
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -37,4 +37,3 @@ addRegionMarker(40.7128, -74.0060, "New York"); // New York
 addRegionMarker(34.0522, -118.2437, "Los Angeles"); // Los Angeles
 addRegionMarker(48.8566, 2.3522, "Paris"); // Paris
 addRegionMarker(35.6762, 139.6503, "Tokyo"); // Tokyo
-
