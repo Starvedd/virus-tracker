@@ -44,7 +44,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: none; /* Let clicks pass through the canvas */
+      pointer-events: none;
       width: 100%;
       height: 100%;
     }
@@ -54,7 +54,7 @@
   <div class="map-container">
     <div class="map"></div>
     <div class="title">$VIRUS</div>
-    <canvas id="infectionCanvas" width="100%" height="100%"></canvas>
+    <canvas id="infectionCanvas"></canvas>
   </div>
 
   <script>
@@ -66,7 +66,7 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Infection areas (relative coordinates)
+    // Infection areas (relative coordinates, use a grid-like representation for continents)
     const infectionAreas = [
       {x: 0.1, y: 0.3}, // Africa
       {x: 0.7, y: 0.1}, // North America
@@ -76,7 +76,7 @@
       {x: 0.3, y: 0.5}, // Asia
     ];
 
-    // Convert relative coordinates to pixel coordinates
+    // Function to convert relative coordinates to pixel coordinates
     function convertToPixelCoords(relX, relY) {
       const mapWidth = canvas.width;
       const mapHeight = canvas.height;
