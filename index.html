@@ -2,92 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Meme Coin World Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
+    <title>Meme Coin World Map</title>
     <style>
-        html, body {
-            height: 100%;
+        body, html {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: black;
         }
 
-        #map {
-            height: 100vh;
+        #map-container {
+            position: relative;
             width: 100vw;
+            height: 95vh; /* slightly less than full height */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2000px-World_map_-_low_resolution.svg.png');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
         }
 
-        #price {
+        .marker {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: red;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 6px red;
+            transform: translate(-50%, -50%);
+        }
+
+        #price-box {
             position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 10px 15px;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #00ffcc;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-family: Arial, sans-serif;
+            font-family: monospace;
             font-size: 18px;
-            z-index: 1000;
+            z-index: 10;
+            border: 1px solid #00ffcc;
         }
     </style>
 </head>
 <body>
 
-<div id="price">Meme Coin Price: $1.00</div>
-<div id="map"></div>
+<div id="price-box">Meme Coin Price: $1.00</div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="map-container">
+    <!-- Sample "infected" locations -->
+    <div class="marker" style="top: 35%; left: 45%;"></div> <!-- USA -->
+    <div class="marker" style="top: 38%; left: 62%;"></div> <!-- Europe -->
+    <div class="marker" style="top: 50%; left: 75%;"></div> <!-- India -->
+    <div class="marker" style="top: 25%; left: 85%;"></div> <!-- Japan -->
+    <div class="marker" style="top: 70%; left: 80%;"></div> <!-- Australia -->
+    <div class="marker" style="top: 55%; left: 20%;"></div> <!-- Brazil -->
+</div>
+
 <script>
-    // Initialize the map
-    const map = L.map('map', {
-        center: [20, 0],
-        zoom: 2,
-        minZoom: 2,
-        maxZoom: 6,
-        maxBounds: [[-90, -180], [90, 180]],
-        maxBoundsViscosity: 1.0
-    });
-
-    // Fix the puzzle-like tile issue with standard tileLayer
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        noWrap: true,
-        bounds: [[-90, -180], [90, 180]]
-    }).addTo(map);
-
-    // Meme coin price simulation
     let price = 1.00;
-    const priceDiv = document.getElementById('price');
+    const priceBox = document.getElementById('price-box');
 
     function updatePrice() {
-        const change = (Math.random() - 0.5) * 0.1;
+        const change = (Math.random() - 0.5) * 0.1; // -0.05 to +0.05
         price = Math.max(0.01, price + change);
-        priceDiv.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
+        priceBox.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
     }
 
     setInterval(updatePrice, 3000);
-
-    // Function to add markers
-    function addInfection(lat, lon, city) {
-        L.circleMarker([lat, lon], {
-            radius: 8,
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.7
-        }).addTo(map).bindPopup(`${city}: Meme Coin spread detected!`);
-    }
-
-    // Add sample markers
-    addInfection(51.505, -0.09, "London");
-    addInfection(40.7128, -74.0060, "New York");
-    addInfection(34.0522, -118.2437, "Los Angeles");
-    addInfection(48.8566, 2.3522, "Paris");
-    addInfection(35.6762, 139.6503, "Tokyo");
-    addInfection(-33.8688, 151.2093, "Sydney");
-    addInfection(55.7558, 37.6173, "Moscow");
 </script>
 
 </body>
