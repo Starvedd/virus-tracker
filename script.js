@@ -1,3 +1,6 @@
+// Debugging: Check if the script is loading
+console.log("Script loaded successfully!");
+
 // Get the price display and canvas context
 const priceDisplay = document.getElementById('price');
 const canvas = document.getElementById('infectionCanvas');
