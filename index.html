@@ -156,12 +156,14 @@
     InfectionDot.prototype.update = function () {
       this.radius += this.growthRate;
 
-      // If the dot goes outside Africa, stop growing it
+      // Check if any part of the dot exceeds the African boundaries
       if (!isInsideAfrica(this.x + this.radius, this.y + this.radius) ||
           !isInsideAfrica(this.x - this.radius, this.y - this.radius) ||
           !isInsideAfrica(this.x + this.radius, this.y - this.radius) ||
           !isInsideAfrica(this.x - this.radius, this.y + this.radius)) {
-        this.radius = 0;  // Stop the growth if the dot exceeds boundaries
+
+        // Stop the growth by setting the radius to the maximum possible value before crossing the border
+        this.radius -= this.growthRate;
       }
     };
 
