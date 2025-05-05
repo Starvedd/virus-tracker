@@ -149,7 +149,7 @@
       this.x = x;
       this.y = y;
       this.radius = radius;
-      this.growthRate = 0.3;
+      this.growthRate = 2.0;  // Increased growth rate for faster expansion
     }
 
     InfectionDot.prototype.update = function () {
@@ -158,8 +158,8 @@
 
     const infectionDots = [];
 
-    // Run the simulation every 1000 milliseconds (1 second)
-    setInterval(simulateInfection, 1000);
+    // Run the simulation every 100 milliseconds for a faster effect
+    setInterval(simulateInfection, 100);
 
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
