@@ -6,19 +6,19 @@
   <title>$VIRUS Tracker</title>
   <style>
     body {
-      background: #000;
-      font-family: Arial, sans-serif;
-      color: #0f0;
-      text-align: center;
       margin: 0;
       padding: 0;
+      background-color: black;
+      color: #0f0;
+      font-family: Arial, sans-serif;
+      text-align: center;
     }
 
     .map-container {
       position: relative;
-      display: inline-block;
       width: 100%;
       height: 100vh;
+      overflow: hidden;
     }
 
     .map {
@@ -44,7 +44,9 @@
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: none; /* To allow interaction with the map behind */
+      pointer-events: none; /* Let clicks pass through the canvas */
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -60,18 +62,21 @@
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Coordinates are relative to the map size.
+    // Ensure that the canvas is the correct size based on the window dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Infection areas (relative coordinates)
     const infectionAreas = [
-      {x: 0.1, y: 0.3}, // Africa (roughly 10% from left, 30% from top)
+      {x: 0.1, y: 0.3}, // Africa
       {x: 0.7, y: 0.1}, // North America
       {x: 0.8, y: 0.6}, // South America
       {x: 0.55, y: 0.2}, // Europe
       {x: 0.4, y: 0.8}, // Australia
       {x: 0.3, y: 0.5}, // Asia
-      // More coordinates can be added here...
     ];
 
-    // Convert relative coordinates to pixel positions
+    // Convert relative coordinates to pixel coordinates
     function convertToPixelCoords(relX, relY) {
       const mapWidth = canvas.width;
       const mapHeight = canvas.height;
@@ -97,7 +102,7 @@
         const {x, y} = convertToPixelCoords(area.x, area.y);
 
         // Simulate the infection radius based on the infection rate (you can adjust this)
-        const radius = Math.random() * 15 + 10;  // Random radius between 10 and 25 for visibility
+        const radius = Math.random() * 10 + 5;  // Random radius between 5 and 15 for visibility
 
         // Draw the infection dot
         ctx.beginPath();
@@ -109,6 +114,12 @@
 
     // Run the infection every 2 seconds
     setInterval(drawInfectionDots, 2000);
+
+    // Optional: Resize canvas when the window is resized
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
