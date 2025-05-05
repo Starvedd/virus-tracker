@@ -136,16 +136,14 @@
 
       // Clear the canvas and redraw the dots
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.globalAlpha = 0.5; // Set 50% opacity for all dots
       infectionDots.forEach((dot) => {
         dot.update();
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        // Set solid red color with transparent alpha
-        ctx.fillStyle = `rgba(255, 50, 50, 1)`; // Red with full color, but alpha set globally
+        // Set solid red color with transparent alpha applied directly
+        ctx.fillStyle = `rgba(255, 50, 50, 0.5)`; // Red with 50% opacity
         ctx.fill();
       });
-      ctx.globalAlpha = 1.0; // Reset global alpha
     }
 
     // Infection dot constructor
