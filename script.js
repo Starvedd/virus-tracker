@@ -1,7 +1,21 @@
-// Ensure Leaflet's map is initialized properly
-const map = L.map('map').setView([51.505, -0.09], 2); // Centered around the world map
+// Define the bounding box (limits for panning and zooming)
+// These are the corners of the region you want to keep the map within
+const bounds = [[30.0, -150.0], [60.0, 0.0]];  // Example: from 30°N, 150°W to 60°N, 0°E
 
-// Tile layer for the map (background map)
+// Initialize the map with options
+const map = L.map('map', {
+    center: [51.505, -0.09], // Initial map center (e.g., London)
+    zoom: 2, // Initial zoom level
+    minZoom: 2, // Minimum zoom level
+    maxZoom: 6, // Maximum zoom level
+    zoomControl: false, // Disable zoom control
+    scrollWheelZoom: false, // Disable zoom with mouse wheel
+    dragging: true, // Allow dragging the map
+    maxBounds: bounds, // Set the bounds for the map's panning
+    maxBoundsViscosity: 1.0 // Prevent panning beyond the set bounds
+});
+
+// Add OpenStreetMap tile layer to the map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
