@@ -95,21 +95,17 @@
 
     // Function to check if a point is inside the African border polygon
     function isInsideAfrica(x, y) {
-      const inside = (px, py) => {
-        let x0 = px, y0 = py, insideFlag = false;
-        for (let i = 0, j = africaBorderCoordinates.length - 1; i < africaBorderCoordinates.length; j = i++) {
-          let xi = africaBorderCoordinates[i].x * canvas.width,
-              yi = africaBorderCoordinates[i].y * canvas.height;
-          let xj = africaBorderCoordinates[j].x * canvas.width,
-              yj = africaBorderCoordinates[j].y * canvas.height;
+      let insideFlag = false;
+      for (let i = 0, j = africaBorderCoordinates.length - 1; i < africaBorderCoordinates.length; j = i++) {
+        let xi = africaBorderCoordinates[i].x * canvas.width,
+            yi = africaBorderCoordinates[i].y * canvas.height;
+        let xj = africaBorderCoordinates[j].x * canvas.width,
+            yj = africaBorderCoordinates[j].y * canvas.height;
 
-          let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-          if (intersect) insideFlag = !insideFlag;
-        }
-        return insideFlag;
-      };
-
-      return inside(x, y);
+        let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) insideFlag = !insideFlag;
+      }
+      return insideFlag;
     }
 
     // Function to simulate the infection
@@ -117,12 +113,17 @@
       const numDotsToAdd = 3;
       for (let i = 0; i < numDotsToAdd; i++) {
         let x, y;
+        let pixelCoords;
+        
+        // Pick random position inside Africa until we get a valid spot
         do {
           // Pick random position within the map
           x = Math.random();
           y = Math.random();
 
-          const pixelCoords = convertToPixelCoords(x, y);
+          pixelCoords = convertToPixelCoords(x, y);
+
+          // Check if the position is inside Africa
           if (isInsideAfrica(pixelCoords.x, pixelCoords.y)) {
             break;
           }
