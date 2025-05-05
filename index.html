@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>$VIRUS Tracker</title>
   <style>
     body {
@@ -44,7 +44,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: none;
+      pointer-events: auto; /* Allow clicking */
       width: 100%;
       height: 100%;
     }
@@ -58,86 +58,76 @@
   </div>
 
   <script>
-    // Get the canvas and context
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
-
-    // Ensure that the canvas is the correct size based on the window dimensions
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Infection areas (relative coordinates, use a grid-like representation for continents)
     const infectionAreas = [
-      {x: 0.1, y: 0.3}, // Africa
-      {x: 0.7, y: 0.1}, // North America
-      {x: 0.8, y: 0.6}, // South America
-      {x: 0.55, y: 0.2}, // Europe
-      {x: 0.4, y: 0.8}, // Australia
-      {x: 0.3, y: 0.5}, // Asia
+      {x: 0.72, y: 0.25}, // North America
+      {x: 0.76, y: 0.60}, // South America
+      {x: 0.18, y: 0.34}, // Africa
+      {x: 0.28, y: 0.19}, // Europe
+      {x: 0.52, y: 0.65}, // Australia
+      {x: 0.40, y: 0.30}, // Asia
     ];
 
-    // Function to convert relative coordinates to pixel coordinates
-    function convertToPixelCoords(relX, relY) {
-      const mapWidth = canvas.width;
-      const mapHeight = canvas.height;
-      return {
-        x: relX * mapWidth,
-        y: relY * mapHeight
-      };
-    }
-
-    // Infection dot object
     function InfectionDot(x, y, radius) {
       this.x = x;
       this.y = y;
-      this.radius = radius;  // Starting radius
-      this.growthRate = 0.3;  // Growth rate for the dot size
+      this.radius = radius;
+      this.growthRate = 0.3;
     }
 
-    // Update the dot's size over time
-    InfectionDot.prototype.update = function() {
-      this.radius += this.growthRate;  // Grow the dot steadily
+    InfectionDot.prototype.update = function () {
+      this.radius += this.growthRate;
     };
 
-    // Array to hold infection dots
     const infectionDots = [];
 
-    // Function to simulate infection growth
-    function simulateInfection() {
-      // Add new infection dots every second
-      const numDotsToAdd = 3; // Add 3 new dots every second for the spread
+    function convertToPixelCoords(relX, relY) {
+      return {
+        x: relX * canvas.width,
+        y: relY * canvas.height,
+      };
+    }
 
+    function simulateInfection() {
+      const numDotsToAdd = 3;
       for (let i = 0; i < numDotsToAdd; i++) {
         const area = infectionAreas[Math.floor(Math.random() * infectionAreas.length)];
-
-        // Convert to pixel coordinates based on map size
-        const {x, y} = convertToPixelCoords(area.x, area.y);
-
-        // Create a new infection dot with a small initial radius
-        const newDot = new InfectionDot(x + Math.random() * 50 - 25, y + Math.random() * 50 - 25, 2);
+        const { x, y } = convertToPixelCoords(area.x, area.y);
+        const newDot = new InfectionDot(
+          x + Math.random() * 50 - 25,
+          y + Math.random() * 50 - 25,
+          2
+        );
         infectionDots.push(newDot);
       }
 
-      // Clear the canvas and draw each infection dot
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw and update each infection dot
-      infectionDots.forEach(dot => {
-        dot.update();  // Update the dot size
+      infectionDots.forEach((dot) => {
+        dot.update();
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 0, 0, 0.8)`;  // Red color with constant opacity
+        ctx.fillStyle = `rgba(255, 0, 0, 0.8)`;
         ctx.fill();
       });
     }
 
-    // Run the infection simulation every 1000ms (1 second)
     setInterval(simulateInfection, 1000);
 
-    // Optional: Resize canvas when the window is resized
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    });
+
+    // 🖱 Mouse click coordinate tracker
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / canvas.width;
+      const y = (e.clientY - rect.top) / canvas.height;
+      console.log(`{ x: ${x.toFixed(3)}, y: ${y.toFixed(3)} }`);
     });
   </script>
 </body>
