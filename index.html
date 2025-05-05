@@ -140,7 +140,7 @@
         dot.update();
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 0, 0, 0.8)`;
+        ctx.fillStyle = `rgba(255, 0, 0, 0.5)`; // Transparent red color
         ctx.fill();
       });
     }
@@ -163,8 +163,6 @@
 
     // Calculate the maximum radius that keeps the infection dot within the African borders
     InfectionDot.prototype.calculateMaxRadius = function () {
-      // For simplicity, we'll just calculate a basic check for distance
-      // from the center of the dot to the nearest boundary of Africa.
       let maxRadius = Infinity;
       for (let i = 0; i < africaBorderCoordinates.length; i++) {
         let borderCoord = africaBorderCoordinates[i];
