@@ -1,151 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Datavis Index</title>
+    <meta charset="UTF-8">
+    <title>Meme Coin World Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-	<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-	<script type="text/javascript" src="chartjs-plugin-datasource.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-	<link rel="stylesheet" href="Foundation-Sites-CSS/css/foundation.css">
-  <link rel="stylesheet" href="Foundation-Sites-CSS/css/app.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/index.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
 
-  <script type="text/javascript">
-    /*google.charts.load('current', {
-      'packages':['geochart'],
-    });
-    google.charts.setOnLoadCallback(drawRegionsMap);
-    var data = google.visualization.arrayToDataTable([['Country', 'Popularity']]);
-    
-    function drawRegionsMap() {
-     var data = google.visualization.arrayToDataTable([ ['Country', 'Chance of impact of event']]);
-     var data = google.visualization.arrayToDataTable([
-        ['Country', 'Popularity'],
-        ['Germany', 0],
-        ['United States', 0],
-        ['Brazil', 0],
-        ['Canada', 0],
-        ['France', 0],
-        ['Russia', 0]
-        ]);
-
-      var options = {
-        backgroundColor: '#000f1a',
-        colorAxis: {colors: ['yellow', 'orange', '#e31b23']},
-        atalessRegionColor: '#2a2a28',
-        defaultColor: '#2a2a28',
-      };
-
-      var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
-
-      chart.draw(data, options);
-    }
-  </script>
-
+        #price {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            z-index: 1000;
+        }
+    </style>
 </head>
-<body style="background-color: #000f1a;">
+<body>
 
-  <div class="off-canvas-wrapper">
-    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
-      <div class="off-canvas position-left" id="offCanvasLeft" data-off-canvas>
-        <!-- left off-canvas markup -->
-        <center>
-          <img src="readme_design/headline.png" alt="Plague Inc - predicting possible epidemics based on natural disasters and wars">
-          
-          <br>
-          Search for country or year, and see how the latest event affected the world.
-        </center>
-        <hr>
+<div id="price">Meme Coin Price: $1.00</div>
+<div id="map"></div>
 
-        <form data-abide novalidate>
-          <div class="grid-x grid-margin-x">
-            <div class="cell">
-              <div data-abide-error class="alert callout" style="display: none;">
-                <p><i class="fi-alert"></i> There are some errors in your form.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="grid-x grid-padding-x">
-          <div class="large-6 medium-6 cell">
-            <label>Choose the type of infection:
-              <select id="infection" required>
-                <option value="Zika"> Zika </option>
-                <!--<option value="Ebola">Ebola</option>-->
-              </select>
-            </label>
-          </div>
-          <div class="large-6 medium-6 cell">
-            <label>Filter for start event by:
-              <select id="filter" required>
-                <option value="Country">Country </option>
-                <option value="Disaster Group">Disaster Group</option>
-                <option value="Region">Region</option>
-                <option value="Start Year">Start Year</option>
-                <option value="End Year">End Year</option>
-              </select>
-            </label>
-          </div>
-        </div>
-          <div>
-            <label>Search for start event based on filter:
-              <div class="grid-x grid-margin-x">
-                <input id="searchvalue" type="text" placeholder="Hungary" aria-describedby="search for a disaster based on filter" required class="large-11"> 
-                <a href="#" class="button" id="search"><i class="fa fa-search" aria-hidden="true" class="large-2"></i></a><br/>
-              </div>
-            </label>
-          </div>
-        </form>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    // Initialize the map
+    const map = L.map('map', {
+        center: [20, 0],
+        zoom: 2,
+        minZoom: 2,
+        maxZoom: 6,
+        maxBounds: [[-90, -180], [90, 180]],
+        maxBoundsViscosity: 1.0
+    });
 
-        <hr>
-        <p style="padding-top: 30%;">
-          <center>
-            <a href="https://youtu.be/KxBMI9pYklE"><img src="readme_design/youtube.png" alt="Github repo link" style="max-height: 32px;"></a>
-            <a href=""><img src="readme_design/GitHub-Mark/GitHub-Mark/PNG/GitHub-Mark-Light-32px.png" alt="Github repo link"></a>
-          </center>
-        </p>
-      </div>
-      <div class="off-canvas position-right" id="offCanvasRight" data-off-canvas data-position="right">
-        <!-- right off-canvas markup -->
-      </div>
-      <div class="off-canvas-content" data-off-canvas-content>
+    // Fix the puzzle-like tile issue with standard tileLayer
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        noWrap: true,
+        bounds: [[-90, -180], [90, 180]]
+    }).addTo(map);
 
-        <div class="grid-x grid-padding-x" style="">
-          <div class="large-12 cell body">
-            <button type="button" class="button" data-toggle="offCanvasLeft">Open Menu</button>
-            <div id="regions_div" style="width: auto; height: 94vh;">   
-              <center>
-                <img src="readme_design/headline.png" alt="Plague Inc - predicting possible epidemics based on natural disasters and wars">
-              </center>
-            </div>
-          </div>
+    // Meme coin price simulation
+    let price = 1.00;
+    const priceDiv = document.getElementById('price');
 
-          <div class="large-12 cell thisfooter">
-            <center>
-              <b>Created with <i class="fa fa-heart" style="color:red"></i> by <a href="https://www.linkedin.com/in/sandor-burian">Sándor Burián</a>, <a href="https://www.linkedin.com/in/vince-moln%C3%A1r-4632191a3?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAC-NWEsB0R33ReLNEcYmNQIguMi0-lBYPhw&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_people%3B%2FVwg4S7gQQmd5Xw43x852g%3D%3D">Vince Molnár</a>, <a href="https://hu.linkedin.com/in/david-kamenar-1178b312a?trk=people-guest_people_search-card">Dávid Kamenár</a> @ <a href="https://hacknheal.crafthub.events/">HackHeal Hackathon 2022</a> on <a href="https://uni-obuda.hu/main-page/">Óbuda University</a> in <a href="https://en.wikipedia.org/wiki/2022">2022</a></b>
-            </center>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    function updatePrice() {
+        const change = (Math.random() - 0.5) * 0.1;
+        price = Math.max(0.01, price + change);
+        priceDiv.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
+    }
 
-	<!--<canvas id="myChart"></canvas>
-    <script src="disastervis.js"></script>-->
+    setInterval(updatePrice, 3000);
 
-    <script src="Foundation-Sites-CSS/js/vendor/jquery.js"></script>
-    <script src="Foundation-Sites-CSS/js/vendor/what-input.js"></script>
-    <script src="Foundation-Sites-CSS/js/vendor/foundation.js"></script>
-    <script src="Foundation-Sites-CSS/js/app.js"></script>
-    
-    <script src="js/eboladata.js"></script>
-    <script src="js/zikadata.js"></script>
-    <script src="js/disasterdata.js"></script>
-    <script src="js/disasters_search.js"></script>
-  </body>
-  </html>
+    // Function to add markers
+    function addInfection(lat, lon, city) {
+        L.circleMarker([lat, lon], {
+            radius: 8,
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.7
+        }).addTo(map).bindPopup(`${city}: Meme Coin spread detected!`);
+    }
+
+    // Add sample markers
+    addInfection(51.505, -0.09, "London");
+    addInfection(40.7128, -74.0060, "New York");
+    addInfection(34.0522, -118.2437, "Los Angeles");
+    addInfection(48.8566, 2.3522, "Paris");
+    addInfection(35.6762, 139.6503, "Tokyo");
+    addInfection(-33.8688, 151.2093, "Sydney");
+    addInfection(55.7558, 37.6173, "Moscow");
+</script>
+
+</body>
+</html>
