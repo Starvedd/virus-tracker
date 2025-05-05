@@ -16,12 +16,30 @@
       background: #000;
       color: #fff;
     }
+
     #map {
       height: 100%;
+    }
+
+    #title-banner {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: lime;
+      z-index: 9999;
+      border: 2px solid lime;
+      font-family: monospace;
     }
   </style>
 </head>
 <body>
+  <div id="title-banner">$VIRUS TRACKER</div>
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
