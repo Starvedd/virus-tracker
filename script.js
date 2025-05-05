@@ -1,66 +1,77 @@
-// Initialize the map
-const map = L.map('map', {
-    center: [51.505, -0.09],  // Initial center of the map
-    zoom: 2,                  // Initial zoom level
-    minZoom: 2,               // Minimum zoom level
-    maxZoom: 6,               // Maximum zoom level
-    zoomControl: false,       // Disable zoom control
-    scrollWheelZoom: false,   // Disable zoom with mouse wheel
-    touchZoom: false,         // Disable pinch zoom
-    keyboard: false,          // Disable zoom with keyboard
-    dragging: true,           // Allow dragging the map
-    worldCopyJump: false,     // Prevent the map from wrapping horizontally
-    attributionControl: false // Optional: Hide the attribution control
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Still Image World Map with Meme Coin Price</title>
+    <style>
+        /* Basic styling for the page */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
 
-// Add OpenStreetMap tile layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+        #map-container {
+            position: relative;
+            height: 100vh;
+            background-image: url('path/to/your-world-map.jpg'); /* Path to your world map image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
 
-// Define a bounding box for panning constraints (world bounds)
-const bounds = [[-90, -180], [90, 180]]; // The world map bounds
-map.setMaxBounds(bounds);
+        /* Markers will be absolutely positioned on the map */
+        .marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%); /* To center the marker */
+        }
 
-// Add a marker to the map
-L.marker([51.505, -0.09]).addTo(map)
-    .bindPopup('Meme Coin Region Price is fluctuating.')
-    .openPopup();
+        /* Optional: Styling for the meme coin price */
+        #price {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
 
-// Update the meme coin price every 3 seconds
-let memeCoinPrice = 1.00;
-const priceElement = document.getElementById('price');
+    <div id="map-container">
+        <!-- Markers for regions -->
+        <div id="marker-ny" class="marker" style="top: 28%; left: 45%;"></div> <!-- New York -->
+        <div id="marker-la" class="marker" style="top: 70%; left: 40%;"></div> <!-- Los Angeles -->
+        <div id="marker-paris" class="marker" style="top: 32%; left: 65%;"></div> <!-- Paris -->
+        <div id="marker-tokyo" class="marker" style="top: 20%; left: 85%;"></div> <!-- Tokyo -->
+    </div>
 
-// Function to fluctuate the meme coin price
-function fluctuatePrice() {
-    const fluctuation = (Math.random() - 0.5) * 0.1;
-    memeCoinPrice = Math.max(0.01, memeCoinPrice + fluctuation);
-    priceElement.innerText = `Meme Coin Price: $${memeCoinPrice.toFixed(2)}`;
-}
+    <!-- Meme Coin Price Display -->
+    <div id="price">Meme Coin Price: $1.00</div>
 
-// Update price every 3 seconds
-setInterval(fluctuatePrice, 3000);
+    <script>
+        // Set up the initial meme coin price
+        let memeCoinPrice = 1.00;
+        const priceElement = document.getElementById('price');
 
-// Add more example regions
-function addRegionMarker(lat, lon, regionName) {
-    L.marker([lat, lon]).addTo(map)
-        .bindPopup(`${regionName} Price is fluctuating.`)
-        .openPopup();
-}
+        // Function to update the meme coin price
+        function fluctuatePrice() {
+            const fluctuation = (Math.random() - 0.5) * 0.1; // Fluctuates the price by a random amount between -0.05 and 0.05
+            memeCoinPrice = Math.max(0.01, memeCoinPrice + fluctuation); // Ensure the price doesn't go below $0.01
+            priceElement.innerText = `Meme Coin Price: $${memeCoinPrice.toFixed(2)}`;
+        }
 
-// Adding some regions
-addRegionMarker(40.7128, -74.0060, "New York");
-addRegionMarker(34.0522, -118.2437, "Los Angeles");
-addRegionMarker(48.8566, 2.3522, "Paris");
-addRegionMarker(35.6762, 139.6503, "Tokyo");
+        // Update the price every 3 seconds
+        setInterval(fluctuatePrice, 3000); // Update the price every 3 seconds
+    </script>
 
-// Adjust the bounds more strictly (avoid dragging the map too far horizontally)
-map.on('drag', function () {
-    const currentBounds = map.getBounds();
-    if (currentBounds.getWest() < -170) {
-        map.panTo([map.getCenter().lat, -170]);
-    }
-    if (currentBounds.getEast() > 170) {
-        map.panTo([map.getCenter().lat, 170]);
-    }
-});
+</body>
+</html>
