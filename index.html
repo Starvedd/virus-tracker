@@ -85,6 +85,9 @@
       {x: 0.431, y: 0.562}
     ];
 
+    // Initialize infection dots array
+    const infectionDots = [];
+
     // Function to convert relative coordinates to pixel positions on the canvas
     function convertToPixelCoords(relX, relY) {
       return {
@@ -166,8 +169,11 @@
     InfectionDot.prototype.calculateMaxRadius = function () {
       let maxRadius = Infinity;
       for (let i = 0; i < africaBorderCoordinates.length; i++) {
-        let borderCoord = africaBorderCoordinates[i];
-        let distance = Math.sqrt(Math.pow(this.x - borderCoord.x * canvas.width, 2) + Math.pow(this.y - borderCoord.y * canvas.height, 2));
+        const borderCoord = africaBorderCoordinates[i];
+        const distance = Math.sqrt(
+          Math.pow(this.x - borderCoord.x * canvas.width, 2) +
+          Math.pow(this.y - borderCoord.y * canvas.height, 2)
+        );
         maxRadius = Math.min(maxRadius, distance); // Keep the smallest distance as the max radius
       }
       return maxRadius;
