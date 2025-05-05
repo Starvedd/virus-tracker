@@ -22,7 +22,7 @@
     }
 
     #title-banner {
-      position: absolute;
+      position: fixed;
       top: 15px;
       left: 50%;
       transform: translateX(-50%);
@@ -32,9 +32,10 @@
       font-size: 24px;
       font-weight: bold;
       color: lime;
-      z-index: 9999;
+      z-index: 1001; /* Make sure it's above the map */
       border: 2px solid lime;
       font-family: monospace;
+      pointer-events: none;
     }
   </style>
 </head>
