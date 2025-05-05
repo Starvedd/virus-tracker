@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Coin World Map</title>
+    <title>Still Image World Map with Meme Coin Price</title>
     <style>
+        /* Basic styling for the page */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            background-color: #fff; /* Removed black background */
         }
 
         #map-container {
             position: relative;
-            width: 100vw;
-            height: 85vh; /* Reduced height for the map */
+            height: 100vh;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2000px-World_map_-_low_resolution.svg.png');
-            background-size: contain; /* Ensure the image fits without stretching */
+            background-size: contain; /* Make sure map fits without stretching */
             background-position: center;
             background-repeat: no-repeat;
-            overflow: hidden;
         }
 
+        /* Markers will be absolutely positioned on the map */
         .marker {
             position: absolute;
             width: 16px;
@@ -34,6 +33,7 @@
             transform: translate(-50%, -50%);
         }
 
+        /* Meme Coin Price Display */
         #price-box {
             position: fixed;
             top: 15px;
@@ -56,25 +56,4 @@
 <div id="map-container">
     <!-- Sample "infected" locations -->
     <div class="marker" style="top: 35%; left: 45%;"></div> <!-- USA -->
-    <div class="marker" style="top: 38%; left: 62%;"></div> <!-- Europe -->
-    <div class="marker" style="top: 50%; left: 75%;"></div> <!-- India -->
-    <div class="marker" style="top: 25%; left: 85%;"></div> <!-- Japan -->
-    <div class="marker" style="top: 70%; left: 80%;"></div> <!-- Australia -->
-    <div class="marker" style="top: 55%; left: 20%;"></div> <!-- Brazil -->
-</div>
-
-<script>
-    let price = 1.00;
-    const priceBox = document.getElementById('price-box');
-
-    function updatePrice() {
-        const change = (Math.random() - 0.5) * 0.1; // -0.05 to +0.05
-        price = Math.max(0.01, price + change);
-        priceBox.innerText = `Meme Coin Price: $${price.toFixed(2)}`;
-    }
-
-    setInterval(updatePrice, 3000);
-</script>
-
-</body>
-</html>
+    <div class="marker" style="top: 38%; left: 62%;
