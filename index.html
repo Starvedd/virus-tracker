@@ -40,23 +40,11 @@
       color: red;
     }
 
-    #coords {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1rem;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid #0f0;
-    }
-
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: auto;
+      pointer-events: auto; /* Allow clicking */
       width: 100%;
       height: 100%;
     }
@@ -66,63 +54,38 @@
   <div class="map-container">
     <div class="map"></div>
     <div class="title">$VIRUS</div>
-    <div id="coords">Click on the map to get coordinates</div>
     <canvas id="infectionCanvas"></canvas>
   </div>
 
   <script>
     const canvas = document.getElementById('infectionCanvas');
     const ctx = canvas.getContext('2d');
-    const coordsDisplay = document.getElementById('coords');
-
-    // Set canvas to full window size
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Resize canvas dynamically on window resize
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-
-    // Africa border coordinates (from your input)
-    const africaBorders = [
-      { x: 0.433, y: 0.521 }, { x: 0.433, y: 0.545 },
-      { x: 0.435, y: 0.584 }, { x: 0.455, y: 0.611 },
-      { x: 0.493, y: 0.606 }, { x: 0.508, y: 0.616 },
-      { x: 0.513, y: 0.644 }, { x: 0.517, y: 0.701 },
-      { x: 0.524, y: 0.747 }, { x: 0.530, y: 0.787 },
-      { x: 0.551, y: 0.781 }, { x: 0.577, y: 0.758 },
-      { x: 0.580, y: 0.736 }, { x: 0.599, y: 0.696 },
-      { x: 0.603, y: 0.636 }, { x: 0.627, y: 0.603 },
-      { x: 0.629, y: 0.568 }, { x: 0.611, y: 0.577 },
-      { x: 0.591, y: 0.549 }, { x: 0.584, y: 0.515 },
-      { x: 0.580, y: 0.498 }, { x: 0.561, y: 0.491 },
-      { x: 0.536, y: 0.476 }, { x: 0.521, y: 0.489 },
-      { x: 0.512, y: 0.455 }, { x: 0.447, y: 0.476 },
-      { x: 0.430, y: 0.505 }, { x: 0.427, y: 0.561 },
-      { x: 0.453, y: 0.597 }
+    // Africa border coordinates (provided by you)
+    const africaBorderCoordinates = [
+      {x: 0.463, y: 0.470}, {x: 0.457, y: 0.479}, {x: 0.451, y: 0.492},
+      {x: 0.441, y: 0.506}, {x: 0.429, y: 0.531}, {x: 0.433, y: 0.541},
+      {x: 0.432, y: 0.555}, {x: 0.431, y: 0.561}, {x: 0.434, y: 0.577},
+      {x: 0.443, y: 0.600}, {x: 0.452, y: 0.611}, {x: 0.462, y: 0.611},
+      {x: 0.472, y: 0.611}, {x: 0.488, y: 0.607}, {x: 0.495, y: 0.607},
+      {x: 0.501, y: 0.614}, {x: 0.504, y: 0.636}, {x: 0.515, y: 0.663},
+      {x: 0.518, y: 0.693}, {x: 0.516, y: 0.708}, {x: 0.525, y: 0.747},
+      {x: 0.534, y: 0.783}, {x: 0.544, y: 0.781}, {x: 0.567, y: 0.774},
+      {x: 0.575, y: 0.758}, {x: 0.582, y: 0.745}, {x: 0.583, y: 0.738},
+      {x: 0.585, y: 0.716}, {x: 0.600, y: 0.696}, {x: 0.595, y: 0.670},
+      {x: 0.600, y: 0.646}, {x: 0.618, y: 0.623}, {x: 0.631, y: 0.578},
+      {x: 0.614, y: 0.580}, {x: 0.608, y: 0.578}, {x: 0.599, y: 0.562},
+      {x: 0.591, y: 0.541}, {x: 0.583, y: 0.518}, {x: 0.576, y: 0.503},
+      {x: 0.581, y: 0.486}, {x: 0.561, y: 0.486}, {x: 0.546, y: 0.486},
+      {x: 0.531, y: 0.492}, {x: 0.513, y: 0.472}, {x: 0.510, y: 0.463},
+      {x: 0.496, y: 0.463}, {x: 0.480, y: 0.470}, {x: 0.465, y: 0.469},
+      {x: 0.455, y: 0.488}, {x: 0.428, y: 0.518}, {x: 0.429, y: 0.521},
+      {x: 0.431, y: 0.562}
     ];
 
-    // Infection Dot Object
-    function InfectionDot(x, y, radius) {
-      this.x = x;
-      this.y = y;
-      this.radius = radius;
-      this.growthRate = 0.2; // Slower growth rate for dots
-      this.maxRadius = 40;   // Set a maximum radius to prevent excessive growth
-    }
-
-    // Update the dot's radius
-    InfectionDot.prototype.update = function () {
-      if (this.radius < this.maxRadius) {
-        this.radius += this.growthRate;
-      }
-    };
-
-    const infectionDots = [];
-
-    // Convert relative coordinates to pixel coordinates on canvas
+    // Function to convert relative coordinates to pixel positions on the canvas
     function convertToPixelCoords(relX, relY) {
       return {
         x: relX * canvas.width,
@@ -130,48 +93,47 @@
       };
     }
 
-    // Function to check if the dot is within Africa's border (using polygon check)
+    // Function to check if a point is inside the African border polygon
     function isInsideAfrica(x, y) {
-      let inside = false;
-      let j = africaBorders.length - 1;
-      for (let i = 0; i < africaBorders.length; i++) {
-        const xi = africaBorders[i].x * canvas.width;
-        const yi = africaBorders[i].y * canvas.height;
-        const xj = africaBorders[j].x * canvas.width;
-        const yj = africaBorders[j].y * canvas.height;
+      const inside = (px, py) => {
+        let x0 = px, y0 = py, insideFlag = false;
+        for (let i = 0, j = africaBorderCoordinates.length - 1; i < africaBorderCoordinates.length; j = i++) {
+          let xi = africaBorderCoordinates[i].x * canvas.width,
+              yi = africaBorderCoordinates[i].y * canvas.height;
+          let xj = africaBorderCoordinates[j].x * canvas.width,
+              yj = africaBorderCoordinates[j].y * canvas.height;
 
-        const intersect = ((yi > y) !== (yj > y)) &&
-          (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-        j = i;
-      }
-      return inside;
+          let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+          if (intersect) insideFlag = !insideFlag;
+        }
+        return insideFlag;
+      };
+
+      return inside(x, y);
     }
 
-    // Simulate the infection spreading only within Africa
+    // Function to simulate the infection
     function simulateInfection() {
-      const numDotsToAdd = 3; // Number of dots to add per simulation
+      const numDotsToAdd = 3;
       for (let i = 0; i < numDotsToAdd; i++) {
-        // Select a random position near the Africa borders
-        const area = africaBorders[Math.floor(Math.random() * africaBorders.length)];
-        const { x, y } = convertToPixelCoords(area.x, area.y);
+        let x, y;
+        do {
+          // Pick random position within the map
+          x = Math.random();
+          y = Math.random();
 
-        // Ensure the dot stays within Africa bounds (a bit inside the border)
-        let dotX = x + Math.random() * 20 - 10; // Keep within 10px inside Africa's border
-        let dotY = y + Math.random() * 20 - 10; // Keep within 10px inside Africa's border
+          const pixelCoords = convertToPixelCoords(x, y);
+          if (isInsideAfrica(pixelCoords.x, pixelCoords.y)) {
+            break;
+          }
+        } while (true); // Keep looping until a valid position inside Africa is found
 
-        // Make sure the dot is inside Africa
-        if (isInsideAfrica(dotX, dotY)) {
-          const newDot = new InfectionDot(
-            dotX,
-            dotY,
-            2 // Starting radius
-          );
-          infectionDots.push(newDot);
-        }
+        // Create and store a new infection dot
+        const newDot = new InfectionDot(pixelCoords.x, pixelCoords.y, 2);
+        infectionDots.push(newDot);
       }
 
-      // Clear canvas and update the infection dots
+      // Clear the canvas and redraw the dots
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       infectionDots.forEach((dot) => {
         dot.update();
@@ -182,16 +144,26 @@
       });
     }
 
+    // Infection dot constructor
+    function InfectionDot(x, y, radius) {
+      this.x = x;
+      this.y = y;
+      this.radius = radius;
+      this.growthRate = 0.3;
+    }
+
+    InfectionDot.prototype.update = function () {
+      this.radius += this.growthRate;
+    };
+
+    const infectionDots = [];
+
+    // Run the simulation every 1000 milliseconds (1 second)
     setInterval(simulateInfection, 1000);
 
-    // Corrected mouse click tracking (relative to the canvas size)
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const relX = (e.clientX - rect.left) / rect.width; // Calculate relative X
-      const relY = (e.clientY - rect.top) / rect.height; // Calculate relative Y
-      const message = `Clicked: { x: ${relX.toFixed(3)}, y: ${relY.toFixed(3)} }`;
-      console.log(message); // Log coordinates to console
-      coordsDisplay.textContent = message; // Show coordinates on the page
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
   </script>
 </body>
