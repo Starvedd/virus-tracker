@@ -1,32 +1,40 @@
-// Debugging: Check if the script is loading
-console.log("Script loaded successfully!");
+// Initialize the map
+const map = L.map('map').setView([51.505, -0.09], 2); // Centered around the world map
 
-// Get the price display and canvas context
-const priceDisplay = document.getElementById('price');
-const canvas = document.getElementById('infectionCanvas');
-const ctx = canvas.getContext('2d');
+// Add tile layer (background map)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
-// Function to simulate a price change (mock data)
-function getSimulatedPrice() {
-  return Math.random() * (0.1 - 0.01) + 0.01; // Random price between 0.01 and 0.1 SOL
+// Set up the initial meme coin price
+let memeCoinPrice = 1.00;
+const priceElement = document.getElementById('price');
+
+// Function to update the meme coin price
+function fluctuatePrice() {
+    const fluctuation = (Math.random() - 0.5) * 0.1; // Fluctuates the price by a random amount between -0.05 and 0.05
+    memeCoinPrice = Math.max(0.01, memeCoinPrice + fluctuation); // Ensure the price doesn't go below $0.01
+    priceElement.innerText = `Meme Coin Price: $${memeCoinPrice.toFixed(2)}`;
 }
 
-// Function to visualize the infection
-function drawInfection(price) {
-  const infectionRate = price * 1000; // Increase the size based on price
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, infectionRate, 0, Math.PI * 2);
-  ctx.fillStyle = 'red';
-  ctx.fill();
+// Add a marker to the map to represent a region (example)
+const marker = L.marker([51.505, -0.09]).addTo(map)
+    .bindPopup('<b>Meme Coin Region</b><br>Price is fluctuating.')
+    .openPopup();
+
+// Update the price every 3 seconds
+setInterval(fluctuatePrice, 3000); // Update the price every 3 seconds
+
+// Example of adding more markers as the simulation grows (for more regions)
+function addRegionMarker(lat, lon, regionName) {
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup(`<b>${regionName}</b><br>Price is fluctuating.`)
+        .openPopup();
 }
 
-// Update price and infection every 2 seconds for demo
-function updateVisuals() {
-  const price = getSimulatedPrice(); // Get the simulated price
-  priceDisplay.textContent = `Current Price: ${price.toFixed(4)} SOL`; // Display price
-  drawInfection(price); // Update the infection visual
-}
+// Adding a few example regions
+addRegionMarker(40.7128, -74.0060, "New York"); // New York
+addRegionMarker(34.0522, -118.2437, "Los Angeles"); // Los Angeles
+addRegionMarker(48.8566, 2.3522, "Paris"); // Paris
+addRegionMarker(35.6762, 139.6503, "Tokyo"); // Tokyo
 
-// Run the update every 2 seconds for demo purposes
-setInterval(updateVisuals, 2000);
