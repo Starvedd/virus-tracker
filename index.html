@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>$VIRUS Tracker - Africa</title>
+  <title>$VIRUS Tracker</title>
   <style>
     body {
       margin: 0;
@@ -40,18 +40,6 @@
       color: red;
     }
 
-    #coords {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1rem;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid #0f0;
-    }
-
     canvas {
       position: absolute;
       top: 0;
@@ -66,8 +54,82 @@
   <div class="map-container">
     <div class="map"></div>
     <div class="title">$VIRUS</div>
-    <div id="coords">Click on the map to get coordinates</div>
     <canvas id="infectionCanvas"></canvas>
   </div>
 
   <script>
+    const canvas = document.getElementById('infectionCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Coordinates for different continents (relative to canvas size)
+    const infectionAreas = [
+      {x: 0.72, y: 0.25}, // North America
+      {x: 0.76, y: 0.60}, // South America
+      {x: 0.18, y: 0.34}, // Africa
+      {x: 0.28, y: 0.19}, // Europe
+      {x: 0.52, y: 0.65}, // Australia
+      {x: 0.40, y: 0.30}, // Asia
+    ];
+
+    function InfectionDot(x, y, radius) {
+      this.x = x;
+      this.y = y;
+      this.radius = radius;
+      this.growthRate = 0.3;
+    }
+
+    InfectionDot.prototype.update = function () {
+      this.radius += this.growthRate;
+    };
+
+    const infectionDots = [];
+
+    function convertToPixelCoords(relX, relY) {
+      return {
+        x: relX * canvas.width,
+        y: relY * canvas.height,
+      };
+    }
+
+    function simulateInfection() {
+      const numDotsToAdd = 3;
+      for (let i = 0; i < numDotsToAdd; i++) {
+        const area = infectionAreas[Math.floor(Math.random() * infectionAreas.length)];
+        const { x, y } = convertToPixelCoords(area.x, area.y);
+        const newDot = new InfectionDot(
+          x + Math.random() * 50 - 25,
+          y + Math.random() * 50 - 25,
+          2
+        );
+        infectionDots.push(newDot);
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      infectionDots.forEach((dot) => {
+        dot.update();
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 0, 0, 0.8)`;
+        ctx.fill();
+      });
+    }
+
+    setInterval(simulateInfection, 1000);
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // 🖱 Mouse click coordinate tracker
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / canvas.width;
+      const y = (e.clientY - rect.top) / canvas.height;
+      console.log(`{ x: ${x.toFixed(3)}, y: ${y.toFixed(3)} }`);
+    });
+  </script>
+</body>
+</html>
