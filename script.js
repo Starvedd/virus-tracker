@@ -18,10 +18,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Define a bounding box for panning constraints (full world view bounds)
+// Define a bounding box for panning constraints (world bounds)
 const bounds = [[-90, -180], [90, 180]]; // The world map bounds
-
-// Apply the max bounds to the map
 map.setMaxBounds(bounds);
 
 // Add a marker to the map
@@ -43,7 +41,7 @@ function fluctuatePrice() {
 // Update price every 3 seconds
 setInterval(fluctuatePrice, 3000);
 
-// Add some example regions
+// Add more example regions
 function addRegionMarker(lat, lon, regionName) {
     L.marker([lat, lon]).addTo(map)
         .bindPopup(`${regionName} Price is fluctuating.`)
@@ -55,3 +53,14 @@ addRegionMarker(40.7128, -74.0060, "New York");
 addRegionMarker(34.0522, -118.2437, "Los Angeles");
 addRegionMarker(48.8566, 2.3522, "Paris");
 addRegionMarker(35.6762, 139.6503, "Tokyo");
+
+// Adjust the bounds more strictly (avoid dragging the map too far horizontally)
+map.on('drag', function () {
+    const currentBounds = map.getBounds();
+    if (currentBounds.getWest() < -170) {
+        map.panTo([map.getCenter().lat, -170]);
+    }
+    if (currentBounds.getEast() > 170) {
+        map.panTo([map.getCenter().lat, 170]);
+    }
+});
