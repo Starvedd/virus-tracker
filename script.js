@@ -49,3 +49,21 @@ setInterval(() => {
     circle.setRadius(20000 * infectionIntensity);
   });
 }, 3000);
+
+// Fetch GORK price in USD and display it
+async function fetchGorkPrice() {
+  try {
+    const response = await fetch(
+      "https://api.dexscreener.com/latest/dex/pairs/solana/HpsMZhFkWkpjTXzH7JGgJENy4oTiULGCCpms8jBfdwBi"
+    );
+    const data = await response.json();
+    const priceUsd = parseFloat(data.pair.priceUsd).toFixed(4);
+    document.getElementById("sol-price").textContent = `GORK Price: $${priceUsd}`;
+  } catch (error) {
+    console.error("Failed to fetch GORK price:", error);
+  }
+}
+
+// Initial fetch and update every 30 seconds
+fetchGorkPrice();
+setInterval(fetchGorkPrice, 30000);
