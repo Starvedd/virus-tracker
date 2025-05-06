@@ -1,113 +1,49 @@
-// Initialize the interactive map using OpenStreetMap
-const map = L.map("map", {
-  minZoom: 2,
-  maxZoom: 5,
-  worldCopyJump: false,
-}).setView([20, 0], 2);
-
-// Add OpenStreetMap tiles
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; OpenStreetMap contributors',
-}).addTo(map);
-
-// Set boundaries to prevent infinite dragging
-const southWest = L.latLng(-85, -180);
-const northEast = L.latLng(85, 180);
-const bounds = L.latLngBounds(southWest, northEast);
-map.setMaxBounds(bounds);
-map.on("drag", function () {
-  map.panInsideBounds(bounds, { animate: false });
-});
-
-// Add infection circles to major cities
-const cities = [
-  { name: "New York", lat: 40.7128, lon: -74.006 },
-  { name: "London", lat: 51.5074, lon: -0.1278 },
-  { name: "Tokyo", lat: 35.6895, lon: 139.6917 },
-  { name: "Paris", lat: 48.8566, lon: 2.3522 },
-  { name: "Sydney", lat: -33.8688, lon: 151.2093 },
-];
-
-let infectionIntensity = 1;
-let infectionCircles = [];
-
-// Create infection circles for each city
-cities.forEach((city) => {
-  const circle = L.circle([city.lat, city.lon], {
-    color: "red",
-    fillColor: "red",
-    fillOpacity: 0.4,
-    radius: 20000 * infectionIntensity,
-  }).addTo(map);
-  infectionCircles.push(circle);
-});
-
-// Simulate infection growth
-setInterval(() => {
-  infectionIntensity += 0.2;
-  infectionCircles.forEach((circle) => {
-    circle.setRadius(20000 * infectionIntensity);
-  });
-}, 3000);
-
-// Fetch the GORK price from an API
+// Function to fetch the GORK price from Dexscreener API
 async function fetchGorkPrice() {
   try {
-    const response = await fetch("YOUR_GORK_API_URL_HERE"); // Replace with the actual GORK API URL
+    // Fetch data from the provided Dexscreener API URL
+    const response = await fetch("https://api.dexscreener.com/latest/dex/pairs/solana/37iWFSqgnTSAfShoBTBzQghwsTtkWAZW3yVzgJWKn6iK");
     const data = await response.json();
-    console.log(data); // Log the full response for debugging purposes
 
-    const price = data && data.priceUsd;
-    if (price) {
-      const gorkPriceElement = document.getElementById("gork-price");
-      if (gorkPriceElement) {
-        gorkPriceElement.innerText = `GORK Price: $${price.toFixed(2)}`;
-      } else {
-        console.error("GORK price element not found");
-      }
+    // Extract the GORK price in USD from the API response
+    const gorkPrice = data.pairs[0].priceUsd;
+
+    // Check if the price is valid before updating
+    if (gorkPrice && !isNaN(gorkPrice)) {
+      document.getElementById("gork-price").innerText = `GORK Price: $${gorkPrice.toFixed(4)}`;
     } else {
-      throw new Error("Price not found in the response");
+      document.getElementById("gork-price").innerText = "GORK Price: Error";
     }
   } catch (error) {
     console.error("Error fetching GORK price:", error);
-    const gorkPriceElement = document.getElementById("gork-price");
-    if (gorkPriceElement) {
-      gorkPriceElement.innerText = "GORK Price: Error";
-    }
+    document.getElementById("gork-price").innerText = "GORK Price: Error";
   }
 }
-
-// Update the GORK price every 30 seconds
-setInterval(fetchGorkPrice, 30000);
 
 // Initial fetch when the page loads
 fetchGorkPrice();
 
-// WebSocket Integration to fetch SOL price from Binance
-const socket = new WebSocket("wss://stream.binance.com:9443/ws/solusdt@trade");
+// Update the GORK price every 30 seconds
+setInterval(fetchGorkPrice, 30000);
 
-// On connection open, log success
-socket.onopen = () => {
-  console.log("WebSocket connected for SOL price updates.");
-};
+// Leaflet map setup (ensure you include Leaflet JS/CSS in the HTML file as well)
+const map = L.map('map').setView([51.505, -0.09], 13); // Example coordinates (London)
 
-// Listen for messages from the WebSocket
-socket.onmessage = (event) => {
-  try {
-    const data = JSON.parse(event.data);
-    const solPrice = parseFloat(data.p); // 'p' is the price from Binance WebSocket message
-    console.log(`SOL Price: $${solPrice.toFixed(2)}`);
-  } catch (error) {
-    console.error("Error parsing WebSocket message:", error);
-  }
-};
+// Set up the OpenStreetMap tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
-// Handle errors in the WebSocket connection
-socket.onerror = (error) => {
-  console.error("WebSocket error:", error);
-};
+// Example marker data (replace with actual data)
+const markers = [
+  { lat: 51.505, lng: -0.09, title: "Marker 1" },
+  { lat: 51.515, lng: -0.1, title: "Marker 2" },
+  { lat: 51.525, lng: -0.12, title: "Marker 3" }
+];
 
-// Close WebSocket connection (optional)
-socket.onclose = () => {
-  console.log("WebSocket connection closed.");
-};
+// Add markers to the map
+markers.forEach(marker => {
+  L.marker([marker.lat, marker.lng])
+    .addTo(map)
+    .bindPopup(marker.title);
+});
