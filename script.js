@@ -49,22 +49,3 @@ setInterval(() => {
     circle.setRadius(20000 * infectionIntensity);
   });
 }, 3000);
-
-// Fetch the Solana price from CoinGecko API
-async function fetchSolPrice() {
-  try {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd");
-    const data = await response.json();
-    const solPrice = data.solana.usd;
-    document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
-  } catch (error) {
-    console.error("Error fetching Solana price:", error);
-    document.getElementById("sol-price").innerText = "SOL Price: Error";
-  }
-}
-
-// Update the price every 30 seconds
-setInterval(fetchSolPrice, 30000);
-
-// Initial fetch when the page loads
-fetchSolPrice();
