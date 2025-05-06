@@ -17,7 +17,7 @@ map.on("drag", function () {
 });
 
 // Add map image
-const imageUrl = "path_to_your_map_image.jpg";
+const imageUrl = "path_to_your_map_image.jpg"; // Ensure your map image path is correct
 const imageBounds = [
   [-85, -180],
   [85, 180],
@@ -63,13 +63,19 @@ async function fetchSolPrice() {
     const response = await fetch(url);
     const data = await response.json();
     
-    const solPrice = parseFloat(data.pair.priceUsd);
-    if (!isNaN(solPrice)) {
-      console.log("Solana Price (USD): $" + solPrice.toFixed(2));
-      updateInfectionBasedOnPrice(solPrice);
-      updatePriceDisplay(solPrice);
+    console.log('API Response:', data); // Log API response for debugging
+    
+    if (data && data.pair && data.pair.priceUsd) {
+      const solPrice = parseFloat(data.pair.priceUsd);
+      if (!isNaN(solPrice)) {
+        console.log("Solana Price (USD): $" + solPrice.toFixed(2));
+        updateInfectionBasedOnPrice(solPrice);
+        updatePriceDisplay(solPrice);
+      } else {
+        console.error("Invalid price data received.");
+      }
     } else {
-      console.log("Error: Price data not available");
+      console.error("Price data not available in the response.");
     }
   } catch (error) {
     console.error("Error fetching price data:", error);
