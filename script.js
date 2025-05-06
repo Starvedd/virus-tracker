@@ -75,6 +75,6 @@ async function fetchGorkPrice() {
   }
 }
 
-// Initial fetch and update every 30 seconds
+// Initial fetch and update every 10 seconds
 fetchGorkPrice();
-setInterval(fetchGorkPrice, 30000);
+setInterval(fetchGorkPrice, 10000);
