@@ -59,13 +59,21 @@ async function fetchGorkPrice() {
 
     const price = data && data.priceUsd;
     if (price) {
-      document.getElementById("gork-price").innerText = `GORK Price: $${price.toFixed(2)}`;
+      const gorkPriceElement = document.getElementById("gork-price");
+      if (gorkPriceElement) {
+        gorkPriceElement.innerText = `GORK Price: $${price.toFixed(2)}`;
+      } else {
+        console.error("GORK price element not found");
+      }
     } else {
       throw new Error("Price not found in the response");
     }
   } catch (error) {
     console.error("Error fetching GORK price:", error);
-    document.getElementById("gork-price").innerText = "GORK Price: Error";
+    const gorkPriceElement = document.getElementById("gork-price");
+    if (gorkPriceElement) {
+      gorkPriceElement.innerText = "GORK Price: Error";
+    }
   }
 }
 
@@ -74,3 +82,32 @@ setInterval(fetchGorkPrice, 30000);
 
 // Initial fetch when the page loads
 fetchGorkPrice();
+
+// WebSocket Integration to fetch SOL price from Binance
+const socket = new WebSocket("wss://stream.binance.com:9443/ws/solusdt@trade");
+
+// On connection open, log success
+socket.onopen = () => {
+  console.log("WebSocket connected for SOL price updates.");
+};
+
+// Listen for messages from the WebSocket
+socket.onmessage = (event) => {
+  try {
+    const data = JSON.parse(event.data);
+    const solPrice = parseFloat(data.p); // 'p' is the price from Binance WebSocket message
+    console.log(`SOL Price: $${solPrice.toFixed(2)}`);
+  } catch (error) {
+    console.error("Error parsing WebSocket message:", error);
+  }
+};
+
+// Handle errors in the WebSocket connection
+socket.onerror = (error) => {
+  console.error("WebSocket error:", error);
+};
+
+// Close WebSocket connection (optional)
+socket.onclose = () => {
+  console.log("WebSocket connection closed.");
+};
