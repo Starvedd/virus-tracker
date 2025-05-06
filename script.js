@@ -31,6 +31,7 @@ const cities = [
 let infectionIntensity = 1;
 let infectionCircles = [];
 
+// Create infection circles for each city
 cities.forEach((city) => {
   const circle = L.circle([city.lat, city.lon], {
     color: "red",
