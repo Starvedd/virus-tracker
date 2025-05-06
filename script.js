@@ -31,7 +31,27 @@ const cities = [
 let infectionIntensity = 1;
 let infectionCircles = [];
 
-// Create infection circles for each city
+// Total population of the world
+const totalPopulation = 8000000000;
+
+// Function to calculate infected population based on infected area
+function calculateInfected() {
+  let infectedArea = 0;
+  infectionCircles.forEach(circle => {
+    infectedArea += Math.PI * Math.pow(circle.getRadius(), 2); // Area of the circle
+  });
+
+  // Assuming 1 square unit of area affects 1 person out of 100,000
+  const infectionRate = 100000;
+  const infectedPopulation = Math.min(
+    totalPopulation,
+    Math.round((infectedArea / infectionRate))
+  );
+
+  return infectedPopulation;
+}
+
+// Add infection circles to the map
 cities.forEach((city) => {
   const circle = L.circle([city.lat, city.lon], {
     color: "red",
@@ -42,29 +62,17 @@ cities.forEach((city) => {
   infectionCircles.push(circle);
 });
 
-// Simulate infection growth
+// Update the infected count on the screen
+function updateInfectedCounter() {
+  const infectedPopulation = calculateInfected();
+  document.getElementById("infected-counter").innerText = `Humans Infected: ${infectedPopulation}`;
+}
+
+// Simulate infection growth and update infected population
 setInterval(() => {
   infectionIntensity += 0.2;
   infectionCircles.forEach((circle) => {
     circle.setRadius(20000 * infectionIntensity);
   });
+  updateInfectedCounter();
 }, 3000);
-
-// Fetch the Solana price from CoinGecko API
-async function fetchSolPrice() {
-  try {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd");
-    const data = await response.json();
-    const solPrice = data.solana.usd;
-    document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
-  } catch (error) {
-    console.error("Error fetching Solana price:", error);
-    document.getElementById("sol-price").innerText = "SOL Price: Error";
-  }
-}
-
-// Update the price every 30 seconds
-setInterval(fetchSolPrice, 30000);
-
-// Initial fetch when the page loads
-fetchSolPrice();
