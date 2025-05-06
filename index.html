@@ -11,38 +11,56 @@
       margin: 0;
     }
 
-    #tracker-title {
+    /* Style for the tracker and SOL price */
+    #tracker-container {
       position: absolute;
-      top: 10px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      color: red;
-      font-size: 24px;
-      font-weight: bold;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 8px 12px;
-      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
       z-index: 1000;
     }
 
-    #infected-counter {
-      position: absolute;
-      top: 100px;
-      left: 10px;
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 8px 12px;
-      border-radius: 6px;
-      z-index: 1000;
+    #tracker-title {
+      color: #ff4d4d;
+      font-size: 28px;
+      font-weight: 800;
+      font-family: 'Arial Black', sans-serif;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 20px;
+      border: 2px solid #ff4d4d;
+      border-radius: 10px;
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+    }
+
+    #sol-price {
+      color: #00bfff;
+      font-size: 28px;
+      font-weight: 800;
+      font-family: 'Arial Black', sans-serif;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 20px;
+      border: 2px solid #00bfff;
+      border-radius: 10px;
+      text-shadow: 0 0 5px rgba(0, 191, 255, 0.7);
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
     }
   </style>
 </head>
 <body>
-  <div id="tracker-title">$VIRUS TRACKER</div>
-  <div id="infected-counter">Humans Infected: 0</div>
+  <!-- Container for both elements -->
+  <div id="tracker-container">
+    <div id="tracker-title">$VIRUS TRACKER</div>
+    <div id="sol-price">SOL Price: $0.00</div>
+  </div>
+
+  <!-- Map container -->
   <div id="map"></div>
+
+  <!-- Include Leaflet.js for maps -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
