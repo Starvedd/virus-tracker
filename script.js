@@ -1,38 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Virus Tracker</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://unpkg.com/leaflet"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-    }
+// Initialize the map
+const map = L.map("map", {
+  crs: L.CRS.Simple,
+  minZoom: 0,
+  maxZoom: 5,
+  zoomControl: false,
+}).setView([0, 0], 2);
 
-    #map {
-      width: 100vw;
-      height: 100vh;
-    }
+// Limit dragging
+const bounds = [
+  [-85, -180],
+  [85, 180],
+];
+map.setMaxBounds(bounds);
+map.on("drag", function () {
+  map.panInsideBounds(bounds, { animate: false });
+});
 
-    #virusTracker {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 30px;
-      color: red;
-      font-weight: bold;
-      z-index: 1000;
-    }
-  </style>
-</head>
-<body>
-  <div id="virusTracker">$VIRUS TRACKER</div>
-  <div id="map"></div>
-  <script src="script.js"></script>
-</body>
-</html>
+// Add map image (replace with your actual image path)
+const imageUrl = "path_to_your_map_image.jpg";
+const imageBounds = [
+  [-85, -180],
+  [85, 180],
+];
+L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+// Infection simulation
+const cities = [
+  { name: "New York", lat: 40.7128, lon: -74.0060, population: 8419600 },
+  { name: "London", lat: 51.5074, lon: -0.1278, population: 8982000 },
+  { name: "Tokyo", lat: 35.6762, lon: 139.6503, population: 13929286 },
+  { name: "Paris", lat: 48.8566, lon: 2.3522, population: 2148327 },
+];
+
+let infectionCircles = [];
+let infectionIntensity = 1;
+
+cities.forEach(city => {
+  const circle = L.circle([city.lat, city.lon], {
+    color: "red",
+    fillColor: "red",
+    fillOpacity: 0.4,
+    radius: 20000 * infectionIntensity,
+  }).addTo(map);
+
+  infectionCircles.push({ city, circle });
+});
+
+function updateInfection() {
+  infectionIntensity += 0.1;
+  infectionCircles.forEach(({ circle }) => {
+    circle.setRadius(20000 * infectionIntensity);
+  });
+}
+setInterval(updateInfection, 3000);
