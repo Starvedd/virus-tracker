@@ -63,8 +63,8 @@ async function fetchSolPrice() {
   }
 }
 
-// Update the price every 10 seconds
-setInterval(fetchSolPrice, 10000);
+// Update the price every 30 seconds
+setInterval(fetchSolPrice, 30000);
 
 // Initial fetch when the page loads
 fetchSolPrice();
