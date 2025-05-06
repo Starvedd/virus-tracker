@@ -17,7 +17,7 @@ map.on("drag", function () {
 });
 
 // Add map image
-const imageUrl = "path_to_your_map_image.jpg";
+const imageUrl = "path_to_your_map_image.jpg"; // replace with actual path
 const imageBounds = [
   [-85, -180],
   [85, 180],
@@ -34,7 +34,6 @@ const cities = [
 
 let infectionCircles = [];
 let infectionIntensity = 1;
-let previousPrice = null; // Store the previous Solana price
 
 // Add infection circles to map for each city
 cities.forEach(city => {
@@ -42,58 +41,21 @@ cities.forEach(city => {
     color: "red",
     fillColor: "red",
     fillOpacity: 0.4,
-    radius: 20000 * infectionIntensity, // Initial radius based on infection intensity
+    radius: 20000 * infectionIntensity,
   }).addTo(map);
 
   infectionCircles.push({ city, circle });
 });
 
-// Function to update infection circles based on infection intensity
+// Function to simulate infection spread
 function updateInfection() {
+  infectionIntensity += 0.1;
+
   infectionCircles.forEach(({ city, circle }) => {
     const newRadius = 20000 * infectionIntensity;
     circle.setRadius(newRadius);
   });
 }
 
-// Function to fetch Solana price
-async function fetchSolPrice() {
-  try {
-    const url = 'https://api.dexscreener.com/latest/dex/pairs/solana/So11111111111111111111111111111111111111112'; // Example for Solana token
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    const solPrice = parseFloat(data.pair.priceUsd);
-    if (!isNaN(solPrice)) {
-      console.log("Solana Price (USD): $" + solPrice.toFixed(2));
-      updateInfectionBasedOnPrice(solPrice);
-    } else {
-      console.log("Error: Price data not available");
-    }
-  } catch (error) {
-    console.error("Error fetching price data:", error);
-  }
-}
-
-// Function to adjust infection based on price change
-function updateInfectionBasedOnPrice(price) {
-  if (previousPrice !== null) {
-    const priceChange = ((price - previousPrice) / previousPrice) * 100;
-    console.log(`Price change: ${priceChange.toFixed(2)}%`);
-
-    if (priceChange > 0) {
-      infectionIntensity += priceChange / 2;
-    } else {
-      infectionIntensity = Math.max(1, infectionIntensity + priceChange / 2);
-    }
-    updateInfection();  // Update infection spread on map
-  }
-
-  previousPrice = price;
-}
-
-// Set interval to fetch Solana price periodically (every 60 seconds)
-setInterval(fetchSolPrice, 60000);
-
-// Fetch initial price when the page loads
-fetchSolPrice();
+// Simulate infection spread over time
+setInterval(updateInfection, 3000);
