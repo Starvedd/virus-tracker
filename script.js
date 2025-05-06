@@ -57,10 +57,21 @@ async function fetchGorkPrice() {
       "https://api.dexscreener.com/latest/dex/pairs/solana/HpsMZhFkWkpjTXzH7JGgJENy4oTiULGCCpms8jBfdwBi"
     );
     const data = await response.json();
-    const priceUsd = parseFloat(data.pair.priceUsd).toFixed(4);
-    document.getElementById("sol-price").textContent = `GORK Price: $${priceUsd}`;
+
+    // Log the data to check the response structure
+    console.log("API response:", data);
+
+    // Check if 'priceUsd' is present and valid
+    if (data && data.pair && data.pair.priceUsd) {
+      const priceUsd = parseFloat(data.pair.priceUsd).toFixed(4);
+      document.getElementById("gork-price").textContent = `GORK Price: $${priceUsd}`;
+    } else {
+      console.error("Price data not found in API response.");
+      document.getElementById("gork-price").textContent = "GORK Price: Not Available";
+    }
   } catch (error) {
     console.error("Failed to fetch GORK price:", error);
+    document.getElementById("gork-price").textContent = "GORK Price: Error Fetching";
   }
 }
 
