@@ -62,6 +62,41 @@
 
   <!-- Include Leaflet.js for maps -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  
+  <!-- WebSocket Integration to fetch SOL price -->
+  <script>
+    // Create WebSocket connection to a Solana price streaming server (e.g., using a WebSocket API for real-time data)
+    const socket = new WebSocket("wss://ws.coincap.io/prices?assets=sol");
+
+    // On connection open, log success
+    socket.onopen = () => {
+      console.log("WebSocket connected for SOL price updates.");
+    };
+
+    // Listen for messages from the WebSocket
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const solPrice = data.sol;
+        document.getElementById("sol-price").innerText = `SOL Price: $${parseFloat(solPrice).toFixed(2)}`;
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    // Handle errors in the WebSocket connection
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      document.getElementById("sol-price").innerText = "SOL Price: Error";
+    };
+
+    // Close WebSocket connection (optional)
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+  </script>
+
+  <!-- Include your external script (if needed for map or other functions) -->
   <script src="script.js"></script>
 </body>
 </html>
