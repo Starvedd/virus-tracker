@@ -1,61 +1,92 @@
-// Initialize the map and set default view
-const map = L.map("map", {
-  crs: L.CRS.Simple,
-  minZoom: 0,
-  maxZoom: 5,
-  zoomControl: false,
-}).setView([0, 0], 2);
+let previousPrice = null;
+let infectionIntensity = 1;
+const infectedRegions = {};
 
-// Set map bounds to restrict scrolling beyond the map area
-const bounds = [
-  [-85, -180],
-  [85, 180],
-];
+const map = L.map('map', {
+  minZoom: 2,
+  maxZoom: 5,
+  worldCopyJump: false, // Prevent map from wrapping
+  zoomControl: true
+}).setView([20, 0], 2);
+
+// Tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// Define the bounds of the map (Lat: -85 to 85, Long: -180 to 180)
+const bounds = L.latLngBounds(
+  L.latLng(-85, -180), // Southwest corner
+  L.latLng(85, 180)    // Northeast corner
+);
+
+// Set the map bounds
 map.setMaxBounds(bounds);
-map.on("drag", function () {
+
+// Lock map from scrolling past the defined bounds
+map.on('drag', function() {
   map.panInsideBounds(bounds, { animate: false });
 });
 
-// Add map image
-const imageUrl = "path_to_your_map_image.jpg"; // replace with actual path
-const imageBounds = [
-  [-85, -180],
-  [85, 180],
-];
-L.imageOverlay(imageUrl, imageBounds).addTo(map);
-
-// Define cities and infection circles
+// Cities to infect
 const cities = [
-  { name: "New York", lat: 40.7128, lon: -74.0060, population: 8419600 },
-  { name: "London", lat: 51.5074, lon: -0.1278, population: 8982000 },
-  { name: "Tokyo", lat: 35.6762, lon: 139.6503, population: 13929286 },
-  { name: "Paris", lat: 48.8566, lon: 2.3522, population: 2148327 },
+  { name: "New York", coords: [40.7128, -74.0060] },
+  { name: "London", coords: [51.5074, -0.1278] },
+  { name: "Tokyo", coords: [35.6895, 139.6917] },
+  { name: "Sydney", coords: [-33.8688, 151.2093] },
+  { name: "Rio de Janeiro", coords: [-22.9068, -43.1729] },
+  { name: "Cairo", coords: [30.0444, 31.2357] },
+  { name: "Moscow", coords: [55.7558, 37.6173] },
+  { name: "Cape Town", coords: [-33.9249, 18.4241] }
 ];
 
-let infectionCircles = [];
-let infectionIntensity = 1;
-
-// Add infection circles to map for each city
+// Add infected city circles
 cities.forEach(city => {
-  const circle = L.circle([city.lat, city.lon], {
-    color: "red",
-    fillColor: "red",
-    fillOpacity: 0.4,
-    radius: 20000 * infectionIntensity,
-  }).addTo(map);
-
-  infectionCircles.push({ city, circle });
+  infectedRegions[city.name] = {
+    ...city,
+    circle: L.circle(city.coords, {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.3,
+      radius: 20000
+    }).addTo(map)
+  };
 });
 
-// Function to simulate infection spread
-function updateInfection() {
-  infectionIntensity += 0.1;
+// Fetch token price from Dexscreener
+async function fetchPrice() {
+  try {
+    const response = await fetch('https://api.dexscreener.com/latest/dex/pairs/solana/So11111111111111111111111111111111111111112');
+    const data = await response.json();
+    const currentPrice = parseFloat(data.pair.priceUsd);
 
-  infectionCircles.forEach(({ city, circle }) => {
+    if (previousPrice !== null) {
+      const change = ((currentPrice - previousPrice) / previousPrice) * 100;
+      console.log(`Price change: ${change.toFixed(2)}%`);
+
+      if (change > 0) {
+        infectionIntensity += change / 2;
+      } else {
+        infectionIntensity = Math.max(1, infectionIntensity + change / 2);
+      }
+
+      updateInfection();
+    }
+
+    previousPrice = currentPrice;
+  } catch (error) {
+    console.error("Error fetching price:", error);
+  }
+}
+
+// Adjust infection radius based on price changes
+function updateInfection() {
+  Object.values(infectedRegions).forEach(region => {
     const newRadius = 20000 * infectionIntensity;
-    circle.setRadius(newRadius);
+    region.circle.setRadius(newRadius);
   });
 }
 
-// Simulate infection spread over time
-setInterval(updateInfection, 3000);
+// Run every 60 seconds
+setInterval(fetchPrice, 60000);
+fetchPrice(); // Initial fetch
