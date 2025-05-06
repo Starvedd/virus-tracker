@@ -50,21 +50,26 @@ setInterval(() => {
   });
 }, 3000);
 
-// Fetch the Solana price from CoinGecko API
-async function fetchSolPrice() {
+// Fetch the GORK/USDC price from DexScreener
+async function fetchGorkPrice() {
   try {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd");
+    const response = await fetch("https://api.dexscreener.com/latest/dex/pairs/solana/HFePrFuFaBWSptTXqxRgXj1Z4RR1QoYuHFfEAw82qf89");
     const data = await response.json();
-    const solPrice = data.solana.usd;
-    document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
+    const gorkPrice = parseFloat(data.pair.priceUsd);
+
+    if (!isNaN(gorkPrice)) {
+      document.getElementById("token-price").innerText = `GORK Price: $${gorkPrice.toFixed(6)}`;
+    } else {
+      throw new Error("Invalid price data");
+    }
   } catch (error) {
-    console.error("Error fetching Solana price:", error);
-    document.getElementById("sol-price").innerText = "SOL Price: Error";
+    console.error("Error fetching GORK price:", error);
+    document.getElementById("token-price").innerText = "GORK Price: Error";
   }
 }
 
-// Update the price every 30 seconds
-setInterval(fetchSolPrice, 30000);
+// Initial fetch
+fetchGorkPrice();
 
-// Initial fetch when the page loads
-fetchSolPrice();
+// Update every 30 seconds
+setInterval(fetchGorkPrice, 30000);
