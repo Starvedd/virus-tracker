@@ -11,7 +11,7 @@
       margin: 0;
     }
 
-    /* Style for the tracker and SOL price */
+    /* Style for the tracker and GORK price */
     #tracker-container {
       position: absolute;
       top: 20px;
@@ -36,7 +36,7 @@
       box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
     }
 
-    #sol-price, #gork-price {
+    #gork-price {
       color: #00bfff;
       font-size: 28px;
       font-weight: 800;
@@ -51,10 +51,9 @@
   </style>
 </head>
 <body>
-  <!-- Container for both elements -->
+  <!-- Container for GORK price -->
   <div id="tracker-container">
     <div id="tracker-title">$VIRUS TRACKER</div>
-    <div id="sol-price">SOL Price: $0.00</div>
     <div id="gork-price">GORK Price: $0.00</div>
   </div>
 
@@ -79,7 +78,7 @@
       try {
         const data = JSON.parse(event.data);
         const solPrice = parseFloat(data.p); // 'p' is the price from Binance WebSocket message
-        document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
+        console.log(`SOL Price: $${solPrice.toFixed(2)}`);
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
@@ -88,7 +87,6 @@
     // Handle errors in the WebSocket connection
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
-      document.getElementById("sol-price").innerText = "SOL Price: Error";
     };
 
     // Close WebSocket connection (optional)
