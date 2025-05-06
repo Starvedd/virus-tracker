@@ -1,49 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Solana Infection Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Virus Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/leaflet"></script>
   <style>
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
+      background-color: #121212;
     }
 
     #map {
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
     }
 
-    #title-banner {
-      position: fixed;
-      top: 15px;
+    #virusTracker {
+      position: absolute;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 24px;
+      font-size: 30px;
+      color: red;
       font-weight: bold;
-      color: red; /* Changed to red */
-      z-index: 1001; /* Make sure it's above the map */
-      border: 2px solid red; /* Border color also changed to red */
-      font-family: monospace;
-      pointer-events: none;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
-  <div id="title-banner">$VIRUS TRACKER</div>
+  <div id="virusTracker">$VIRUS TRACKER</div>
   <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
