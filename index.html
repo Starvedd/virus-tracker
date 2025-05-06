@@ -63,10 +63,10 @@
   <!-- Include Leaflet.js for maps -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   
-  <!-- WebSocket Integration to fetch SOL price -->
+  <!-- WebSocket Integration to fetch SOL price from Binance -->
   <script>
-    // Create WebSocket connection to a Solana price streaming server (e.g., using a WebSocket API for real-time data)
-    const socket = new WebSocket("wss://ws.coincap.io/prices?assets=sol");
+    // Create WebSocket connection to Binance for Solana price updates
+    const socket = new WebSocket("wss://stream.binance.com:9443/ws/solusdt@trade");
 
     // On connection open, log success
     socket.onopen = () => {
@@ -77,8 +77,8 @@
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        const solPrice = data.sol;
-        document.getElementById("sol-price").innerText = `SOL Price: $${parseFloat(solPrice).toFixed(2)}`;
+        const solPrice = parseFloat(data.p); // 'p' is the price from Binance WebSocket message
+        document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
