@@ -11,7 +11,7 @@
       margin: 0;
     }
 
-    /* Style for the tracker and token price */
+    /* Style for the tracker and SOL price */
     #tracker-container {
       position: absolute;
       top: 20px;
@@ -36,34 +36,68 @@
       box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
     }
 
-    #token-price {
-      color: #00ffae;
+    #sol-price, #gork-price {
+      color: #00bfff;
       font-size: 28px;
       font-weight: 800;
       font-family: 'Arial Black', sans-serif;
       background: rgba(0, 0, 0, 0.7);
       padding: 10px 20px;
-      border: 2px solid #00ffae;
+      border: 2px solid #00bfff;
       border-radius: 10px;
-      text-shadow: 0 0 5px rgba(0, 255, 174, 0.7);
-      box-shadow: 0 0 10px rgba(0, 255, 174, 0.4);
+      text-shadow: 0 0 5px rgba(0, 191, 255, 0.7);
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
     }
   </style>
 </head>
 <body>
-  <!-- Container for tracker title and GORK price -->
+  <!-- Container for both elements -->
   <div id="tracker-container">
     <div id="tracker-title">$VIRUS TRACKER</div>
-    <div id="token-price">GORK Price: $0.00</div>
+    <div id="sol-price">SOL Price: $0.00</div>
+    <div id="gork-price">GORK Price: $0.00</div>
   </div>
 
   <!-- Map container -->
   <div id="map"></div>
 
-  <!-- Include Leaflet.js -->
+  <!-- Include Leaflet.js for maps -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   
-  <!-- Include external JS file -->
+  <!-- WebSocket Integration to fetch SOL price from Binance -->
+  <script>
+    // Create WebSocket connection to Binance for Solana price updates
+    const socket = new WebSocket("wss://stream.binance.com:9443/ws/solusdt@trade");
+
+    // On connection open, log success
+    socket.onopen = () => {
+      console.log("WebSocket connected for SOL price updates.");
+    };
+
+    // Listen for messages from the WebSocket
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const solPrice = parseFloat(data.p); // 'p' is the price from Binance WebSocket message
+        document.getElementById("sol-price").innerText = `SOL Price: $${solPrice.toFixed(2)}`;
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    // Handle errors in the WebSocket connection
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      document.getElementById("sol-price").innerText = "SOL Price: Error";
+    };
+
+    // Close WebSocket connection (optional)
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+  </script>
+
+  <!-- Include your external script (if needed for map or other functions) -->
   <script src="script.js"></script>
 </body>
 </html>
