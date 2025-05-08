@@ -37,51 +37,55 @@ const continents = {
   Antarctica: { lat: [-90, -60], lon: [-180, 180] },
 };
 
-// Simulate price increase
+// Smooth transition variables
+let lastPrice = currentPrice;
+let lastNumCircles = 0;
+let lastCircleRadius = 300;
+
+// Simulate price increase gradually
 setInterval(() => {
   currentPrice += priceIncreaseRate;
 
   // Log price for debugging
   console.log("Current Price:", currentPrice);
 
-  // Scatter infection circles based on price increase
-  scatterInfectionCircles();
+  // Calculate smooth changes in circle count and size
+  smoothCircleGrowth();
 }, 500); // Adjust interval to simulate faster movement
 
-// Function to scatter infection circles across continents based on their regions
-function scatterInfectionCircles() {
-  // Remove all previous circles
-  infectionCircles.forEach((circle) => {
-    map.removeLayer(circle);
-  });
-  infectionCircles = [];
+// Function to smoothly adjust the number of circles and their size
+function smoothCircleGrowth() {
+  // Calculate the new number of circles based on the price
+  let numCircles = Math.floor(currentPrice * 3000); // Adjust multiplier for a slower spread
+  let circleRadius = Math.max(300, Math.random() * (currentPrice * 8000)); // Smaller radius scale
 
-  // Calculate the number of circles based on the price
-  let numCircles = Math.floor(currentPrice * 5000); // Adjust multiplier for faster spread
+  // Add new circles gradually if price has increased
+  let circlesToAdd = numCircles - lastNumCircles;
+  let radiusChange = circleRadius - lastCircleRadius;
 
-  // Loop over each continent
+  // Loop over each continent and gradually add circles
   for (let continent in continents) {
     let continentCoords = continents[continent];
-    
-    // Scatter circles for each continent
-    for (let i = 0; i < numCircles; i++) {
+
+    for (let i = 0; i < circlesToAdd; i++) {
       let lat = getRandomInRange(continentCoords.lat[1], continentCoords.lat[0]);
       let lon = getRandomInRange(continentCoords.lon[1], continentCoords.lon[0]);
 
-      // Random radius size, increasing if price goes up
-      let radius = Math.max(1000, Math.random() * (currentPrice * 20000)); // Random radius based on price
-
-      // Add circle to the map
+      // Add circle to the map with gradual radius change
       const circle = L.circle([lat, lon], {
         color: "red",
         fillColor: "red",
         fillOpacity: 0.4,
-        radius: radius,
+        radius: lastCircleRadius + (radiusChange * (i / circlesToAdd)), // Gradual radius increase
       }).addTo(map);
 
       infectionCircles.push(circle);
     }
   }
+
+  // Update last values
+  lastNumCircles = numCircles;
+  lastCircleRadius = circleRadius;
 }
 
 // Function to get a random value within a given range
@@ -90,4 +94,4 @@ function getRandomInRange(min, max) {
 }
 
 // Initially scatter circles based on the starting price
-scatterInfectionCircles();
+smoothCircleGrowth();
