@@ -40,7 +40,7 @@ const continents = {
 // Smooth transition variables
 let lastPrice = currentPrice;
 let lastNumCircles = 0;
-let lastCircleRadius = 300;
+let lastCircleRadius = 100; // Start with a smaller initial radius
 
 // Simulate price increase gradually
 setInterval(() => {
@@ -57,7 +57,7 @@ setInterval(() => {
 function smoothCircleGrowth() {
   // Calculate the new number of circles based on the price
   let numCircles = Math.floor(currentPrice * 3000); // Adjust multiplier for a slower spread
-  let circleRadius = Math.max(300, Math.random() * (currentPrice * 8000)); // Smaller radius scale
+  let circleRadius = Math.max(50, Math.random() * (currentPrice * 300)); // Smaller radius scale, reduced size
 
   // Add new circles gradually if price has increased
   let circlesToAdd = numCircles - lastNumCircles;
