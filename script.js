@@ -15,7 +15,7 @@ const southWest = L.latLng(-85, -180);
 const northEast = L.latLng(85, 180);
 const bounds = L.latLngBounds(southWest, northEast);
 map.setMaxBounds(bounds);
-map.on("drag", function () {
+map.on("drag", () => {
   map.panInsideBounds(bounds, { animate: false });
 });
 
@@ -58,20 +58,18 @@ async function fetchGorkPrice() {
     );
     const data = await response.json();
 
-    // Check if 'priceUsd' is present and valid
-    if (data && data.pair && data.pair.priceUsd) {
-      const priceUsd = parseFloat(data.pair.priceUsd).toFixed(4);
-      document.getElementById("gork-price").textContent = `GORK Price: $${priceUsd}`;
+    if (data?.pair?.priceUsd) {
+      const price = parseFloat(data.pair.priceUsd).toFixed(5);
+      document.getElementById("gork-price").textContent = `GORK Price: $${price}`;
     } else {
-      console.error("Price data not found in API response.");
-      document.getElementById("gork-price").textContent = "GORK Price: Not Available";
+      document.getElementById("gork-price").textContent = "GORK Price: Not Found";
     }
   } catch (error) {
     console.error("Failed to fetch GORK price:", error);
-    document.getElementById("gork-price").textContent = "GORK Price: Error Fetching";
+    document.getElementById("gork-price").textContent = "GORK Price: Error";
   }
 }
 
-// Initial fetch and update every 10 seconds
+// Run immediately and then every 10 seconds
 fetchGorkPrice();
 setInterval(fetchGorkPrice, 10000);
