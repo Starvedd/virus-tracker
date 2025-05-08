@@ -50,7 +50,7 @@ function scatterInfectionCircles() {
   infectionCircles = [];
 
   // Calculate the number of circles based on the price
-  let numCircles = Math.floor(currentPrice * 100);
+  let numCircles = Math.floor(currentPrice * 5000); // Adjust multiplier for faster spread
 
   // Randomly scatter circles around the world based on the current price
   for (let i = 0; i < numCircles; i++) {
@@ -58,18 +58,20 @@ function scatterInfectionCircles() {
     let lat = Math.random() * 180 - 90; // Latitude between -90 and 90
     let lon = Math.random() * 360 - 180; // Longitude between -180 and 180
 
+    // Random radius size, decreasing if price goes down
+    let radius = Math.max(1000, Math.random() * (currentPrice * 20000)); // Random radius based on price
+
     // Add circle to the map
     const circle = L.circle([lat, lon], {
       color: "red",
       fillColor: "red",
       fillOpacity: 0.4,
-      radius: 2000 + (Math.random() * 10000), // Random radius size based on price
+      radius: radius,
     }).addTo(map);
-    
+
     infectionCircles.push(circle);
   }
 }
 
 // Initially scatter circles based on the starting price
 scatterInfectionCircles();
-
