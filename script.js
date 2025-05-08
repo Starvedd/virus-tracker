@@ -21,13 +21,6 @@ map.on("drag", function () {
 
 // Initialize infection circles array
 let infectionCircles = [];
-let cities = [
-  { name: "New York", lat: 40.7128, lon: -74.0060 },
-  { name: "London", lat: 51.5074, lon: -0.1278 },
-  { name: "Tokyo", lat: 35.6895, lon: 139.6917 },
-  { name: "Paris", lat: 48.8566, lon: 2.3522 },
-  { name: "Sydney", lat: -33.8688, lon: 151.2093 },
-];
 
 // Set initial price and movement rates
 let currentPrice = 0.02675; // Example starting price of GORK in USD
@@ -77,29 +70,6 @@ function scatterInfectionCircles() {
   }
 }
 
-// Fetch GORK price in USD and display it
-async function fetchGorkPrice() {
-  try {
-    const response = await fetch(
-      "https://api.dexscreener.com/latest/dex/pairs/solana/37iWFSqgnTSAfShoBTBzQghwsTtkWAZW3yVzgJWKn6iK"
-    );
-    const data = await response.json();
-
-    // Check if 'priceUsd' is present and valid
-    if (data && data.pair && data.pair.priceUsd) {
-      currentPrice = parseFloat(data.pair.priceUsd); // Update the price with the actual API price
-      document.getElementById("gork-price").textContent = `GORK Price: $${currentPrice.toFixed(4)}`;
-    } else {
-      console.error("Price data not found in API response.");
-      document.getElementById("gork-price").textContent = "GORK Price: Not Available";
-    }
-  } catch (error) {
-    console.error("Failed to fetch GORK price:", error);
-    document.getElementById("gork-price").textContent = "GORK Price: Error Fetching";
-  }
-}
-
-// Initial fetch and update every 10 seconds
-fetchGorkPrice();
-setInterval(fetchGorkPrice, 10000); // Fetch price every 10 seconds
+// Initially scatter circles based on the starting price
+scatterInfectionCircles();
 
