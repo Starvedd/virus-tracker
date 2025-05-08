@@ -54,12 +54,9 @@ setInterval(() => {
 async function fetchGorkPrice() {
   try {
     const response = await fetch(
-      "https://api.dexscreener.com/latest/dex/pairs/solana/HpsMZhFkWkpjTXzH7JGgJENy4oTiULGCCpms8jBfdwBi"
+      "https://api.dexscreener.com/latest/dex/pairs/solana/37iWFSqgnTSAfShoBTBzQghwsTtkWAZW3yVzgJWKn6iK"
     );
     const data = await response.json();
-
-    // Log the data to check the response structure
-    console.log("API response:", data);
 
     // Check if 'priceUsd' is present and valid
     if (data && data.pair && data.pair.priceUsd) {
