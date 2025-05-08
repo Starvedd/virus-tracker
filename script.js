@@ -24,20 +24,16 @@ let infectionCircles = [];
 
 // Set initial price and movement rates
 let currentPrice = 0.02675; // Example starting price of GORK in USD
-let priceChangeRate = 0.002; // Increase rate for price movement
-let retracementRate = 0.0008; // Retracement rate to simulate fluctuations
+let priceIncreaseRate = 0.002; // Rate at which the price increases
 
-// Simulate price change
+// Simulate price increase
 setInterval(() => {
-  let randomChange = Math.random() > 0.95 ? -retracementRate : priceChangeRate; // Random retracement or increase
-  currentPrice += randomChange;
-
-  if (currentPrice < 0.01) currentPrice = 0.01; // Ensure price doesn't go below 0.01
+  currentPrice += priceIncreaseRate;
 
   // Log price for debugging
   console.log("Current Price:", currentPrice);
 
-  // Scatter infection circles based on price change
+  // Scatter infection circles based on price increase
   scatterInfectionCircles();
 }, 500); // Adjust interval to simulate faster movement
 
@@ -58,7 +54,7 @@ function scatterInfectionCircles() {
     let lat = Math.random() * 180 - 90; // Latitude between -90 and 90
     let lon = Math.random() * 360 - 180; // Longitude between -180 and 180
 
-    // Random radius size, decreasing if price goes down
+    // Random radius size, increasing if price goes up
     let radius = Math.max(1000, Math.random() * (currentPrice * 20000)); // Random radius based on price
 
     // Add circle to the map
