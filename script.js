@@ -15,11 +15,11 @@ const southWest = L.latLng(-85, -180);
 const northEast = L.latLng(85, 180);
 const bounds = L.latLngBounds(southWest, northEast);
 map.setMaxBounds(bounds);
-map.on("drag", () => {
+map.on("drag", function () {
   map.panInsideBounds(bounds, { animate: false });
 });
 
-// Add infection circles to major cities
+// City data
 const cities = [
   { name: "New York", lat: 40.7128, lon: -74.006 },
   { name: "London", lat: 51.5074, lon: -0.1278 },
@@ -30,6 +30,9 @@ const cities = [
 
 let infectionIntensity = 1;
 let infectionCircles = [];
+let currentPrice = 0.02675;  // Starting GORK price for simulation
+let priceChangeRate = 0.0005; // Price increase rate (per interval)
+let retracementRate = 0.005; // Retracement rate (for random pullback)
 
 // Create infection circles for each city
 cities.forEach((city) => {
@@ -42,15 +45,30 @@ cities.forEach((city) => {
   infectionCircles.push(circle);
 });
 
-// Simulate infection growth
+// Simulate price growth with retracements and spread
 setInterval(() => {
-  infectionIntensity += 0.2;
-  infectionCircles.forEach((circle) => {
-    circle.setRadius(20000 * infectionIntensity);
-  });
-}, 3000);
+  // Simulate price growth and random retracement
+  let randomChange = Math.random() > 0.95 ? -retracementRate : priceChangeRate; // Simulate retracement
+  currentPrice += randomChange;
+  if (currentPrice < 0.01) currentPrice = 0.01; // Prevent price from going below a minimum value
 
-// Fetch GORK price in USD and display it
+  // Update GORK price display
+  document.getElementById("gork-price").textContent = `GORK Price: $${currentPrice.toFixed(4)}`;
+
+  // Simulate the movement of infection circles across the world
+  infectionCircles.forEach((circle) => {
+    // Randomly move circles to a new location on the map (to simulate virus spread)
+    let newLat = Math.random() * 180 - 90; // Latitude: range [-90, 90]
+    let newLon = Math.random() * 360 - 180; // Longitude: range [-180, 180]
+    circle.setLatLng([newLat, newLon]); // Move circle to new location
+
+    // Optionally, update circle radius to simulate spread intensity
+    let newRadius = 20000 * (1 + randomChange * 10); // Radius based on price growth rate
+    circle.setRadius(newRadius);
+  });
+}, 500); // Update every 500ms (for fast simulation)
+
+// Initial fetch and update every 10 seconds (optional, if you still want to show the real API price)
 async function fetchGorkPrice() {
   try {
     const response = await fetch(
@@ -58,18 +76,20 @@ async function fetchGorkPrice() {
     );
     const data = await response.json();
 
-    if (data?.pair?.priceUsd) {
-      const price = parseFloat(data.pair.priceUsd).toFixed(5);
-      document.getElementById("gork-price").textContent = `GORK Price: $${price}`;
+    // Check if 'priceUsd' is present and valid
+    if (data && data.pair && data.pair.priceUsd) {
+      const priceUsd = parseFloat(data.pair.priceUsd).toFixed(4);
+      document.getElementById("gork-price").textContent = `GORK Price: $${priceUsd}`;
     } else {
-      document.getElementById("gork-price").textContent = "GORK Price: Not Found";
+      console.error("Price data not found in API response.");
+      document.getElementById("gork-price").textContent = "GORK Price: Not Available";
     }
   } catch (error) {
     console.error("Failed to fetch GORK price:", error);
-    document.getElementById("gork-price").textContent = "GORK Price: Error";
+    document.getElementById("gork-price").textContent = "GORK Price: Error Fetching";
   }
 }
 
-// Run immediately and then every 10 seconds
+// Initial fetch and update every 10 seconds
 fetchGorkPrice();
 setInterval(fetchGorkPrice, 10000);
